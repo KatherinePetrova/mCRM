@@ -1,0 +1,13 @@
+.back { 
+	background-color: rgb(242, 242, 242);
+}
+
+.tex {
+	color: rgb(77, 166, 255);
+}
+
+.bord {
+	border-width: 0.5px;
+	border-color: rgb(77, 166, 255);
+}
+

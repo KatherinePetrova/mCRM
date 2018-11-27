@@ -1,0 +1,98 @@
+<template>
+	<div class="drag" v-on:dragover="allowDrop($event)" v-on:drop="drop($event)">
+		<div class="deal bord tex" v-for="item in deal" draggable="true" v-on:dragstart="drag($event, item)">
+			{{ item.name }}
+			{{ item.budget }}тг
+		</div>
+	</div>
+</template>
+
+<script>
+import axios from 'axios';
+export default {
+	props: ['id'],
+	data(){
+		return {
+			deal: [],
+		}
+	},
+	watch: {
+		id: function(){
+			axios.post(`http://localhost:3000/api/where/deal`, {step: this.id}).then((res)=>{
+				this.deal = res.data;
+			});
+		}
+	},
+	methods: {
+		drag(event, item){
+			event.dataTransfer.setData("text", JSON.stringify(item));
+			for(var i=0; i<this.deal.length; i++){
+				if(this.deal[i].id==item.id){
+					this.deal.splice(i, 1);
+				}
+			}
+		},
+		allowDrop(event){
+		    event.preventDefault();
+		},
+		async drop(event){
+			event.preventDefault();
+			var item = JSON.parse(event.dataTransfer.getData("text"));
+			try {
+				item.step = this.id;
+				await axios.post(`http://localhost:3000/api/update/deal`, item);
+				this.deal.push(item);
+			} catch(e){
+				alert(e.message);
+			}
+		}
+	},
+	mounted(){
+		axios.post(`http://localhost:3000/api/where/deal`, {step: this.id}).then((res)=>{
+			this.deal = res.data
+		});
+	}
+}
+</script>
+
+<style scoped>
+	::-webkit-scrollbar {
+	    width: 0px;
+	}
+	::-webkit-scrollbar-track {
+	    background: #f1f1f1; 
+	}
+	::-webkit-scrollbar-thumb {
+	    background: #888; 
+	}
+	::-webkit-scrollbar-thumb:hover {
+	    background: #555; 
+	}
+	.drag {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		width: 100%;
+		height: 80%;
+		background: white;
+		overflow-y: auto;
+		padding-top: 1px;
+	}
+	.deal {
+		transition: 0.5s;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		width: 99%;
+		min-height: 15%;
+		background-color: white;
+		border-bottom-style: solid;
+		text-align: center;
+	}
+
+	.deal:hover {
+		background-color: rgba(230, 230, 255, 0.8);
+		cursor: pointer;
+	}
+</style>
