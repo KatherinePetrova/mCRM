@@ -1,6 +1,6 @@
 <template>
 	<div class="main back">
-		<!-- <newDeal></newDeal> -->
+		<newDeal v-if="dealId" @dealId="newDeal"></newDeal>
 		<div class="header bord">
 			<div class="menu tex">
 				<div class="dropdown">
@@ -18,7 +18,7 @@
 			<nuxt-link to="/" class="menu tex" style="color: red; position: absolute; right: 0"	>Выход</nuxt-link>
 		</div>
 		<div class="body">
-			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert"></process>
+			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @dealId="newDeal"></process>
 			
 		</div>
 	</div>
@@ -33,7 +33,8 @@ export default {
 		return {
 			id: 0,
 			name: '',
-			procs: []
+			procs: [],
+			dealId:false
 		}
 	},
 	components: {
@@ -45,6 +46,9 @@ export default {
 			this.id = data.id;
 			this.name = data.name;
 			this.procs.push(data);
+		},
+		newDeal(dealData){
+			this.dealId=dealData;
 		}
 	},
 	mounted(){

@@ -21,9 +21,9 @@
 				<!-- <div class="new_deal tex" v-if="index==0">
 					dcdjkcdj
 				</div> -->
-				<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
-					<button class="btn" v-on:click="">Новая сделка</button>
-				</div>
+				<!-- <div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
+					<button class="btn" v-on:click="$emit('dealId', true)">Новая сделка</button>
+				</div> -->
 			</div>
 		</div>
 		</div>
@@ -35,7 +35,7 @@
 					dcdjkcdj
 				</div> -->
 				<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
-					<button class="btn" v-on:click="">Новая сделка</button>
+					<button class="btn" v-on:click="$emit('dealId', true)">Новая сделка</button>
 				</div>
 			</div>
 		</div>
@@ -110,6 +110,9 @@ export default {
 		clearStep(){
 			this.new_step = [];
 		},
+		// newDeal(){
+		// 	this.$emit('dealId', true);
+		// },
 	},
 	mounted(){
 		axios.post(`http://crm.aziaimport.kz:3000/api/where/step`, {process: this.id}).then((res)=>{
