@@ -1,5 +1,6 @@
 <template>
 	<div class="main back">
+		<!-- <newDeal></newDeal> -->
 		<div class="header bord">
 			<div class="menu tex">
 				<div class="dropdown">
@@ -17,7 +18,8 @@
 			<nuxt-link to="/" class="menu tex" style="color: red; position: absolute; right: 0"	>Выход</nuxt-link>
 		</div>
 		<div class="body">
-			<process :id="id" :new_process="false" @insert="insert"></process>
+			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert"></process>
+			
 		</div>
 	</div>
 </template>
@@ -25,6 +27,7 @@
 <script>
 import axios from 'axios';
 import process from './process';
+import newDeal from './new-deal';
 export default {
 	data(){
 		return {
@@ -34,7 +37,8 @@ export default {
 		}
 	},
 	components: {
-		process
+		process,
+		newDeal,
 	},
 	methods:{
 		async insert(data){
@@ -75,6 +79,7 @@ export default {
 		justify-content: center;
 		min-height: 100vh;
 		flex-direction: column;
+		align-items: center;
 	}
 	div.header {
 		position: relative;
@@ -97,7 +102,7 @@ export default {
 		height: 10vh;
 		width: 20%;
 		background-color: rgba(255, 255, 255, 0.8);
-		transition: 1s;
+		transition: .5s;
 		text-decoration: none;
 		position: relative;
 	}
@@ -123,7 +128,7 @@ export default {
 		justify-content: center;
 		align-items: center;
 		transition: 1s;
-		z-index: 999999;
+		z-index: 99;
 		background-color: rgba(77, 166, 255, 0.5);
 		color: white;
 		text-align: center;
