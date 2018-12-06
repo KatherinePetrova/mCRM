@@ -11,7 +11,7 @@
 					<div class="menuex bord" @click="id=0">Создать новую воронку</div>
 				</div>
 			</div>
-			<div class="menu tex">Сделки</div>
+			<div class="menu tex" @click="doSmth()">Сделки</div>
 			<div class="menu tex">Календарь</div>
 			<div class="menu tex"></div>
 			<nuxt-link to="/" class="menu tex" style="color: red; position: absolute; right: 0"	>Выход</nuxt-link>
@@ -41,11 +41,29 @@ export default {
 			this.id = data.id;
 			this.name = data.name;
 			this.procs.push(data);
+		},
+		async doSmth(){
+			try{
+				var post = await axios(`http://localhost:3000/users/test`, {
+					method: 'post',
+					withCredentials: true
+				});
+				console.log(post);	
+			} catch(e){
+				alert(e);
+			}
+			
 		}
+
 	},
 	mounted(){
-		axios.post(`http://crm.aziaimport.kz:3000/api/select/process/0`).then((res)=>{
+		axios(`http://localhost:3000/api/select/process/0`, {
+			method: 'post',
+			withCredentials: true
+		}).then((res)=>{
 			this.procs = res.data
+		}).catch((res)=>{
+			this.$router.push('/');
 		});
 	}
 }
