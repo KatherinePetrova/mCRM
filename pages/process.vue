@@ -60,11 +60,13 @@ export default {
 	},
 	watch: {
 		id: function(){
-			axios(`http://localhost:3000/api/where/step`, {
+			console.log(this.id);
+			axios(`http://localhost:3000/api/where/step/0`, {
 				data: {process: this.id},
 				method: 'post',
 				withCredentials: true
 			}).then((res)=>{
+				console.log(res.data);
 				this.step = res.data;
 			});
 			setTimeout(this.color, 100);
@@ -106,7 +108,11 @@ export default {
 		async sendStep(){
 			try{
 				for(var i=0; i<this.new_step.length; i++){
-					var insert = await axios.post('http://localhost:3000/api/insert/step', this.new_step[i]);
+					var insert = await axios('http://localhost:3000/api/insert/step', {
+						data: this.new_step[i],
+						method: 'post',
+						withCredentials: true
+					});
 					await this.step.push(insert.data);
 					this.color();
 				}
@@ -120,7 +126,7 @@ export default {
 		},
 	},
 	mounted(){
-		axios(`http://localhost:3000/api/where/step`, {
+		axios(`http://localhost:3000/api/where/step/0`, {
 			data: {process: this.id},
 			method: 'post',
 			withCredentials: true

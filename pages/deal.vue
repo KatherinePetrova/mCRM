@@ -4,6 +4,9 @@
 			{{ item.name }}
 			{{ item.budget }}тг
 		</div>
+		<div class="deal bord tex" style="background-color: rgba(77, 166, 255, 0.5); color: white;" @click="downMore()">
+			Загрузить далее
+		</div>
 	</div>
 </template>
 
@@ -14,11 +17,12 @@ export default {
 	data(){
 		return {
 			deal: [],
+			count: 0
 		}
 	},
 	watch: {
 		id: function(){
-			axios(`http://localhost:3000/api/where/deal`, {
+			axios(`http://localhost:3000/api/where/deal/${this.count}`, {
 				data: {step: this.id},
 				method: 'post',
 				withCredentials: true
@@ -28,6 +32,18 @@ export default {
 		}
 	},
 	methods: {
+		downMore(){
+			this.count = this.count + 10;
+			axios(`http://localhost:3000/api/where/deal/${this.count}`, {
+				data: {step: this.id},
+				method: 'post',
+				withCredentials: true
+			}).then((res)=>{
+				for(var i=0; i<res.data.length; i++){
+					this.deal.push(res.data[i]);
+				}
+			});
+		},
 		drag(event, item){
 			event.dataTransfer.setData("text", JSON.stringify(item));
 			for(var i=0; i<this.deal.length; i++){
@@ -56,7 +72,7 @@ export default {
 		}
 	},
 	mounted(){
-		axios(`http://localhost:3000/api/where/deal`, {
+		axios(`http://localhost:3000/api/where/deal/${this.count}`, {
 			data: {step: this.id},
 			method: 'post',
 			withCredentials: true
