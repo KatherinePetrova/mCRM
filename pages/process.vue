@@ -1,19 +1,42 @@
 <template>
 	<div class="process" v-bind:class="{processBack: new_process}">
+		
 		<form v-on:submit.prevent="sendProcess()" class="circle bord" v-if="id == 0" @click="createProcess()" v-bind:class="{clicked_circle: new_process, back: new_process}">
 			<div v-if="new_process">Введите название воронки</div>
 			<div v-else>Создать новую воронку</div>
 			<input type="text" v-model="label" v-if="new_process" style="margin: 2vh">
 		</form>
-		<div class="circle bord" v-else-if="step.length == 0">Создать этапы</div>
-		<div class="bord single_process" v-else v-for="(item, index) in step" :key="index">
+		<div class="new_step" v-else-if="step.length==0">
+		<form class="stepInput bord stepCircle" @submit.prevent="createStep">
+			<label>Добавить этап</label>
+			<input class="stepName" v-model="stepName" placeholder="Новый этап" required>
+			<input type="submit" class="btn" value="Добавить">
+			<a class="btn" v-on:click="sendStep()">Завершить</a>
+			<a class="btn" v-on:click="clearStep()">Отменить</a>
+		</form>
+		<div class="bord single_process tex" v-for="(item, index) in new_step" :key="index">
+			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
+			<deal :id="0"></deal>
+			<div style="" class="foot">
+				<!-- <div class="new_deal tex" v-if="index==0">
+					dcdjkcdj
+				</div> -->
+				<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
+					<button class="btn" v-on:click="">Новая сделка</button>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div class="bord single_process" v-else-if="step.length!=0" v-for="(item, index) in step" :key="index">
 			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
 			<deal :id="item.id"></deal>
 			<div style="" class="foot">
-				<div class="new_deal tex" v-if="index==0">
+				<!-- <div class="new_deal tex" v-if="index==0">
 					dcdjkcdj
+				</div> -->
+				<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
+					<button class="btn" v-on:click="">Новая сделка</button>
 				</div>
-				<div style="height: 50%; display: flex; align-items: center; justify-content: center;">Lorem Ipsum Dolor</div>
 			</div>
 		</div>
 	</div>
@@ -22,13 +45,15 @@
 <script>
 import axios from 'axios';
 import deal from './deal';
+
 export default {
 	components: {
 		deal
 	},
-	props: ['id', 'new_process'],
+	props: ['id', 'new_process', 'new_step'],
 	data(){
 		return {
+			stepName: '',
 			step: [],
 			label: ''
 		}
@@ -39,7 +64,7 @@ export default {
 				this.step = res.data;
 			});
 			setTimeout(this.color, 100);
-		}
+		},
 	},
 	methods: {
 		getRandomInt(min, max) {
@@ -49,6 +74,7 @@ export default {
 			var procs = document.querySelectorAll('.single_process');
 			for(var i=0; i<procs.length; i++){
 				procs[i].style.backgroundColor = `rgba(${this.getRandomInt(150, 200)}, ${this.getRandomInt(150, 200)}, ${this.getRandomInt(150, 200)}, 1)`;
+				procs[i].style.color = 'white';
 			}
 		},
 		createProcess(){
@@ -64,7 +90,26 @@ export default {
 			} catch(e){
 				alert(e);
 			}
-		}
+		},
+		createStep(){
+				this.new_step.push({name: this.stepName, process: this.id});
+				this.stepName = ''
+		},
+		async sendStep(){
+			try{
+				for(var i=0; i<this.new_step.length; i++){
+					var insert = await axios.post('http://localhost:3000/api/insert/step', this.new_step[i]);
+					await this.step.push(insert.data);
+					this.color();
+				}
+			} catch(e){
+				alert(e)
+			}
+
+		},
+		clearStep(){
+			this.new_step = [];
+		},
 	},
 	mounted(){
 		axios.post(`http://localhost:3000/api/where/step`, {process: this.id}).then((res)=>{
@@ -76,6 +121,14 @@ export default {
 </script>
 
 <style scoped>
+	.new_step {
+		position: relative;
+		height: 100%;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 	.new_deal {
 		height: 50%;
 		width: 100%;
@@ -104,7 +157,7 @@ export default {
 		transition: 1s;
 		border-style: solid;
 		border-color: white;
-		color: white;
+		color: rgb(77, 166, 255);
 	}
 
 	.process {
@@ -119,9 +172,58 @@ export default {
 		background-color: rgb(242, 242, 242);
 	}
 
+	.stepInput {
+		position: absolute;
+		z-index: 2;
+	}
+
 	.processBack {
 		background-color: rgba(77, 166, 255, 0.8);
 	}
+	
+	.stepName {
+		width: 15em;
+		height: 2em;
+		margin-top: .5em;
+	}
+
+	.btn {
+		margin-top: .5em;
+		display: inline-block;
+		width: 10em;
+		height: 2em;
+		line-height: 2em;
+		vertical-align: middle;
+		text-align: center;
+		text-decoration: none;
+		user-select: none;
+		color: rgb(0,0,0);
+		outline: none;
+		border: 1px solid rgba(0,0,0,.4);
+		border-top-color: rgba(0,0,0,.3);
+		border-radius: 2px;
+		background: linear-gradient(rgb(255,255,255), rgb(240,240,240));
+		box-shadow:
+		0 0 3px rgba(0,0,0,0) inset,
+		0 1px 1px 1px rgba(255,255,255,.2),
+		0 -1px 1px 1px rgba(0,0,0,0);
+		transition: .2s ease-in-out;
+	}
+
+		.btn:hover:not(:active) {
+			box-shadow:
+			0 0 3px rgba(0,0,0,0) inset,
+			0 1px 1px 1px rgba(0,255,255,.5),
+			0 -1px 1px 1px rgba(0,255,255,.5);
+		}
+
+		.btn:active {
+			background: linear-gradient(rgb(250,250,250), rgb(235,235,235));
+			box-shadow:
+			0 0 3px rgba(0,0,0,.5) inset,
+			0 1px 1px 1px rgba(255,255,255,.4),
+			0 -1px 1px 1px rgba(0,0,0,.1);
+		}
 
 	.circle {
 		position: absolute;
@@ -143,6 +245,21 @@ export default {
 		background-color: rgb(77, 166, 255);
 		color: white;
 		cursor: pointer;
+	}
+
+	.stepCircle {
+		position: absolute;
+		height: 50vh;
+		width: 50vh;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-radius: 50%;
+		border-style: solid;
+		background-color: rgb(77, 166, 255);
+		color: white;
+		transition: 1s;
+		flex-direction: column;
 	}
 
 	.clicked_circle {
