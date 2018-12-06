@@ -60,7 +60,7 @@ export default {
 	},
 	watch: {
 		id: function(){
-			axios.post(`http://localhost:3000/api/where/step`, {process: this.id}).then((res)=>{
+			axios.post(`http://crm.aziaimport.kz:3000/api/where/step`, {process: this.id}).then((res)=>{
 				this.step = res.data;
 			});
 			setTimeout(this.color, 100);
@@ -85,7 +85,7 @@ export default {
 		},
 		async sendProcess(){
 			try{
-				var data = await axios.post('http://localhost:3000/api/insert/process', {name: this.label});
+				var data = await axios.post('http://crm.aziaimport.kz:3000/api/insert/process', {name: this.label});
 				this.$emit('insert', data.data)
 			} catch(e){
 				alert(e);
@@ -112,7 +112,7 @@ export default {
 		},
 	},
 	mounted(){
-		axios.post(`http://localhost:3000/api/where/step`, {process: this.id}).then((res)=>{
+		axios.post(`http://crm.aziaimport.kz:3000/api/where/step`, {process: this.id}).then((res)=>{
 			this.step = res.data
 		});
 		setTimeout(this.color, 100);

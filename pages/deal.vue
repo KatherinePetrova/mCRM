@@ -18,7 +18,7 @@ export default {
 	},
 	watch: {
 		id: function(){
-			axios.post(`http://localhost:3000/api/where/deal`, {step: this.id}).then((res)=>{
+			axios.post(`http://crm.aziaimport.kz:3000/api/where/deal`, {step: this.id}).then((res)=>{
 				this.deal = res.data;
 			});
 		}
@@ -40,7 +40,7 @@ export default {
 			var item = JSON.parse(event.dataTransfer.getData("text"));
 			try {
 				item.step = this.id;
-				await axios.post(`http://localhost:3000/api/update/deal`, item);
+				await axios.post(`http://crm.aziaimport.kz:3000/api/update/deal`, {id: item.id, step: item.step, changed: new Date()});
 				this.deal.push(item);
 			} catch(e){
 				alert(e.message);
@@ -48,7 +48,7 @@ export default {
 		}
 	},
 	mounted(){
-		axios.post(`http://localhost:3000/api/where/deal`, {step: this.id}).then((res)=>{
+		axios.post(`http://crm.aziaimport.kz:3000/api/where/deal`, {step: this.id}).then((res)=>{
 			this.deal = res.data
 		});
 	}
