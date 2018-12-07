@@ -4,7 +4,7 @@
 			{{ item.name }}
 			{{ item.budget }}тг
 		</div>
-		<div class="deal bord tex" style="background-color: rgba(77, 166, 255, 0.5); color: white;" @click="downMore()">
+		<div class="deal bord tex" style="background-color: rgba(77, 166, 255, 0.5); color: white;" @click="downMore()" v-if="(deal.length%10)==0">
 			Загрузить далее
 		</div>
 	</div>
@@ -22,7 +22,9 @@ export default {
 	},
 	watch: {
 		id: function(){
-			axios(`http://localhost:3000/api/where/deal/${this.count}`, {
+			this.deal=[];
+			this.count = 0;
+			axios(`http://crm.aziaimport.kz:3000/api/where/deal/${this.count}`, {
 				data: {step: this.id},
 				method: 'post',
 				withCredentials: true
@@ -34,7 +36,7 @@ export default {
 	methods: {
 		downMore(){
 			this.count = this.count + 10;
-			axios(`http://localhost:3000/api/where/deal/${this.count}`, {
+			axios(`http://crm.aziaimport.kz:3000/api/where/deal/${this.count}`, {
 				data: {step: this.id},
 				method: 'post',
 				withCredentials: true
@@ -60,19 +62,19 @@ export default {
 			var item = JSON.parse(event.dataTransfer.getData("text"));
 			try {
 				item.step = this.id;
-				await axios(`http://localhost:3000/api/update/deal`, {
+				await axios(`http://crm.aziaimport.kz:3000/api/update/deal`, {
 					data: {id: item.id, step: item.step, changed: true},
 					method: 'post',
 					withCredentials: true
 				});
-				this.deal.push(item);
+				this.deal.unshift(item);
 			} catch(e){
 				alert(e.message);
 			}
 		}
 	},
 	mounted(){
-		axios(`http://localhost:3000/api/where/deal/${this.count}`, {
+		axios(`http://crm.aziaimport.kz:3000/api/where/deal/${this.count}`, {
 			data: {step: this.id},
 			method: 'post',
 			withCredentials: true

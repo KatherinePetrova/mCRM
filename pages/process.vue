@@ -1,31 +1,30 @@
 <template>
 	<div class="process" v-bind:class="{processBack: new_process}">
-		
 		<form v-on:submit.prevent="sendProcess()" class="circle bord" v-if="id == 0" @click="createProcess()" v-bind:class="{clicked_circle: new_process, back: new_process}">
 			<div v-if="new_process">Введите название воронки</div>
 			<div v-else>Создать новую воронку</div>
 			<input type="text" v-model="label" v-if="new_process" style="margin: 2vh">
 		</form>
 		<div class="new_step" v-else-if="step.length==0">
-		<form class="stepInput bord stepCircle" @submit.prevent="createStep">
-			<label>Добавить этап</label>
-			<input class="stepName" v-model="stepName" placeholder="Новый этап" required>
-			<input type="submit" class="btn" value="Добавить">
-			<a class="btn" v-on:click="sendStep()">Завершить</a>
-			<a class="btn" v-on:click="clearStep()">Отменить</a>
-		</form>
-		<div class="bord single_process tex" v-for="(item, index) in new_step" :key="index">
-			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
-			<deal :id="0"></deal>
-			<div style="" class="foot">
-				<!-- <div class="new_deal tex" v-if="index==0">
-					dcdjkcdj
-				</div> -->
-				<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
-					<button class="btn" v-on:click="">Новая сделка</button>
+			<form class="stepInput bord stepCircle" @submit.prevent="createStep">
+				<label>Добавить этап</label>
+				<input class="stepName" v-model="stepName" placeholder="Новый этап" required>
+				<input type="submit" class="btn" value="Добавить">
+				<a class="btn" v-on:click="sendStep()">Завершить</a>
+				<a class="btn" v-on:click="clearStep()">Отменить</a>
+			</form>
+			<div class="bord single_process tex" v-for="(item, index) in new_step" :key="index">
+				<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
+				<deal :id="0"></deal>
+				<div style="" class="foot">
+					<!-- <div class="new_deal tex" v-if="index==0">
+						dcdjkcdj
+					</div> -->
+					<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
+						<button class="btn" v-on:click="">Новая сделка</button>
+					</div>
 				</div>
 			</div>
-		</div>
 		</div>
 		<div class="bord single_process" v-else-if="step.length!=0" v-for="(item, index) in step" :key="index">
 			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
@@ -61,15 +60,16 @@ export default {
 	watch: {
 		id: function(){
 			console.log(this.id);
-			axios(`http://localhost:3000/api/where/step/0`, {
+			axios(`http://crm.aziaimport.kz:3000/api/where/step/0`, {
 				data: {process: this.id},
 				method: 'post',
 				withCredentials: true
 			}).then((res)=>{
 				console.log(res.data);
 				this.step = res.data;
+				setTimeout(this.color, 100);
 			});
-			setTimeout(this.color, 100);
+			
 		},
 	},
 	methods: {
@@ -91,7 +91,7 @@ export default {
 		},
 		async sendProcess(){
 			try{
-				var data = await axios('http://localhost:3000/api/insert/process', {
+				var data = await axios('http://crm.aziaimport.kz:3000/api/insert/process', {
 					data: {name: this.label},
 					method: 'post',
 					withCredentials: true
@@ -108,13 +108,12 @@ export default {
 		async sendStep(){
 			try{
 				for(var i=0; i<this.new_step.length; i++){
-					var insert = await axios('http://localhost:3000/api/insert/step', {
+					var insert = await axios('http://crm.aziaimport.kz:3000/api/insert/step', {
 						data: this.new_step[i],
 						method: 'post',
 						withCredentials: true
 					});
 					await this.step.push(insert.data);
-					this.color();
 				}
 			} catch(e){
 				alert(e)
@@ -126,14 +125,15 @@ export default {
 		},
 	},
 	mounted(){
-		axios(`http://localhost:3000/api/where/step/0`, {
+		axios(`http://crm.aziaimport.kz:3000/api/where/step/0`, {
 			data: {process: this.id},
 			method: 'post',
 			withCredentials: true
 		}).then((res)=>{
 			this.step = res.data
+			setTimeout(this.color, 100);
 		});
-		setTimeout(this.color, 100);
+		
 	}
 }
 </script>
@@ -165,6 +165,7 @@ export default {
 		flex-direction: column;
 	}
 	.single_process {
+		min-width: 300px;
 		width: 100%;
 		display: flex;
 		position: relative;
@@ -176,6 +177,7 @@ export default {
 		border-style: solid;
 		border-color: white;
 		color: rgb(77, 166, 255);
+		text-align: center;
 	}
 
 	.process {
@@ -184,7 +186,6 @@ export default {
 		width: 100%;
 		height: 100%;
 		overflow-x: auto;
-		justify-content: center;
 		align-items: center;
 		transition: 1s;
 		background-color: rgb(242, 242, 242);
