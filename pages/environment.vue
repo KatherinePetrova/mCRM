@@ -12,14 +12,18 @@
 					<div class="menuex bord" @click="id=0">Создать новую воронку</div>
 				</div>
 			</div>
-			<div class="menu tex" @click="doSmth()">Сделки</div>
-			<div class="menu tex">Календарь</div>
+			<div class="menu tex" @click="doSmth()">Тест</div>
+			<div class="menu tex"></div>
 			<div class="menu tex"></div>
 			<nuxt-link to="/" class="menu tex" style="color: red; position: absolute; right: 0"	>Выход</nuxt-link>
 		</div>
 		<div class="body">
+<<<<<<< HEAD
 			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @dealId="newDeal"></process>
 			
+=======
+			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert"></process>
+>>>>>>> 980c92c3c51eecdad83f1abe7ba594b614054515
 		</div>
 	</div>
 </template>
@@ -52,7 +56,7 @@ export default {
 		},
 		async doSmth(){
 			try{
-				var post = await axios(`http://localhost:3000/users/test`, {
+				var post = await axios(`http://crm.aziaimport.kz:3000/users/test`, {
 					method: 'post',
 					withCredentials: true
 				});
@@ -64,7 +68,7 @@ export default {
 
 	},
 	mounted(){
-		axios(`http://localhost:3000/api/select/process/0`, {
+		axios(`http://crm.aziaimport.kz:3000/api/select/process/0`, {
 			method: 'post',
 			withCredentials: true
 		}).then((res)=>{
@@ -79,7 +83,6 @@ export default {
 <style scoped>
 	div.main {
 		display: flex;
-		justify-content: center;
 		min-height: 100vh;
 		flex-direction: column;
 		align-items: center;
@@ -89,8 +92,8 @@ export default {
 		display: flex;
 		align-items: center;
 		min-width: 100vw;
-		min-height: 10vh;
-		max-height: 10vh;
+		min-height: 5vh;
+		max-height: 5vh;
 		border-bottom-style: solid;
 		background-color: white;
 		background-image: url('/main.png');
@@ -102,7 +105,7 @@ export default {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		height: 10vh;
+		height: 5vh;
 		width: 20%;
 		background-color: rgba(255, 255, 255, 0.8);
 		transition: .5s;
@@ -149,7 +152,7 @@ export default {
 	.body {
 		position: relative;
 		display: flex;
-		min-height: calc(90vh - 0.5px);
+		min-height: calc(95vh - 0.5px);
 		min-width: 100vw;
 		justify-content: center;
 		align-items: center;
