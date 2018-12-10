@@ -4,6 +4,9 @@
 			{{ item.name }}
 			{{ item.budget }}тг
 		</div>
+		<div class="deal bord tex" style="background-color: rgba(77, 166, 255, 0.5); color: white;" @click="downMore()">
+			Загрузить далее
+		</div>
 	</div>
 </template>
 
@@ -14,16 +17,33 @@ export default {
 	data(){
 		return {
 			deal: [],
+			count: 0
 		}
 	},
 	watch: {
 		id: function(){
-			axios.post(`http://crm.aziaimport.kz:3000/api/where/deal`, {step: this.id}).then((res)=>{
+			axios(`http://localhost:3000/api/where/deal/${this.count}`, {
+				data: {step: this.id},
+				method: 'post',
+				withCredentials: true
+			}).then((res)=>{
 				this.deal = res.data;
 			});
 		}
 	},
 	methods: {
+		downMore(){
+			this.count = this.count + 10;
+			axios(`http://localhost:3000/api/where/deal/${this.count}`, {
+				data: {step: this.id},
+				method: 'post',
+				withCredentials: true
+			}).then((res)=>{
+				for(var i=0; i<res.data.length; i++){
+					this.deal.push(res.data[i]);
+				}
+			});
+		},
 		drag(event, item){
 			event.dataTransfer.setData("text", JSON.stringify(item));
 			for(var i=0; i<this.deal.length; i++){
@@ -40,7 +60,11 @@ export default {
 			var item = JSON.parse(event.dataTransfer.getData("text"));
 			try {
 				item.step = this.id;
-				await axios.post(`http://crm.aziaimport.kz:3000/api/update/deal`, {id: item.id, step: item.step, changed: new Date()});
+				await axios(`http://localhost:3000/api/update/deal`, {
+					data: {id: item.id, step: item.step, changed: true},
+					method: 'post',
+					withCredentials: true
+				});
 				this.deal.push(item);
 			} catch(e){
 				alert(e.message);
@@ -48,7 +72,11 @@ export default {
 		}
 	},
 	mounted(){
-		axios.post(`http://crm.aziaimport.kz:3000/api/where/deal`, {step: this.id}).then((res)=>{
+		axios(`http://localhost:3000/api/where/deal/${this.count}`, {
+			data: {step: this.id},
+			method: 'post',
+			withCredentials: true
+		}).then((res)=>{
 			this.deal = res.data
 		});
 	}

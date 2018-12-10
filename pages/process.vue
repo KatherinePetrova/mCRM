@@ -11,8 +11,8 @@
 			<label>Добавить этап</label>
 			<input class="stepName" v-model="stepName" placeholder="Новый этап" required>
 			<input type="submit" class="btn" value="Добавить">
-			<a class="btn" v-on:click="sendStep()">Завершить</a>
-			<a class="btn" v-on:click="clearStep()">Отменить</a>
+			<input type="button" class="btn" v-on:click="sendStep()" value="Завершить">
+			<input type="button" class="btn" v-on:click="clearStep()" value="Отменить">
 		</form>
 		<div class="bord single_process tex" v-for="(item, index) in new_step" :key="index">
 			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
@@ -60,7 +60,13 @@ export default {
 	},
 	watch: {
 		id: function(){
-			axios.post(`http://crm.aziaimport.kz:3000/api/where/step`, {process: this.id}).then((res)=>{
+			console.log(this.id);
+			axios(`http://localhost:3000/api/where/step/0`, {
+				data: {process: this.id},
+				method: 'post',
+				withCredentials: true
+			}).then((res)=>{
+				console.log(res.data);
 				this.step = res.data;
 			});
 			setTimeout(this.color, 100);
@@ -85,7 +91,11 @@ export default {
 		},
 		async sendProcess(){
 			try{
-				var data = await axios.post('http://crm.aziaimport.kz:3000/api/insert/process', {name: this.label});
+				var data = await axios('http://localhost:3000/api/insert/process', {
+					data: {name: this.label},
+					method: 'post',
+					withCredentials: true
+				});
 				this.$emit('insert', data.data)
 			} catch(e){
 				alert(e);
@@ -98,7 +108,11 @@ export default {
 		async sendStep(){
 			try{
 				for(var i=0; i<this.new_step.length; i++){
-					var insert = await axios.post('http://localhost:3000/api/insert/step', this.new_step[i]);
+					var insert = await axios('http://localhost:3000/api/insert/step', {
+						data: this.new_step[i],
+						method: 'post',
+						withCredentials: true
+					});
 					await this.step.push(insert.data);
 					this.color();
 				}
@@ -115,7 +129,11 @@ export default {
 		// },
 	},
 	mounted(){
-		axios.post(`http://crm.aziaimport.kz:3000/api/where/step`, {process: this.id}).then((res)=>{
+		axios(`http://localhost:3000/api/where/step/0`, {
+			data: {process: this.id},
+			method: 'post',
+			withCredentials: true
+		}).then((res)=>{
 			this.step = res.data
 		});
 		setTimeout(this.color, 100);
@@ -193,7 +211,7 @@ export default {
 	.btn {
 		margin-top: .5em;
 		display: inline-block;
-		width: 10em;
+		width: 11em;
 		height: 2em;
 		line-height: 2em;
 		vertical-align: middle;
