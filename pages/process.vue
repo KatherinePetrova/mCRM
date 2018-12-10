@@ -6,6 +6,25 @@
 			<input type="text" v-model="label" v-if="new_process" style="margin: 2vh">
 		</form>
 		<div class="new_step" v-else-if="step.length==0">
+<<<<<<< HEAD
+		<form class="stepInput bord stepCircle" @submit.prevent="createStep">
+			<label>Добавить этап</label>
+			<input class="stepName" v-model="stepName" placeholder="Новый этап" required>
+			<input type="submit" class="btn" value="Добавить">
+			<input type="button" class="btn" v-on:click="sendStep()" value="Завершить">
+			<input type="button" class="btn" v-on:click="clearStep()" value="Отменить">
+		</form>
+		<div class="bord single_process tex" v-for="(item, index) in new_step" :key="index">
+			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
+			<deal :id="0"></deal>
+			<div style="" class="foot">
+				<!-- <div class="new_deal tex" v-if="index==0">
+					dcdjkcdj
+				</div> -->
+				<!-- <div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
+					<button class="btn" v-on:click="$emit('dealId', true)">Новая сделка</button>
+				</div> -->
+=======
 			<form class="stepInput bord stepCircle" @submit.prevent="createStep">
 				<label>Добавить этап</label>
 				<input class="stepName" v-model="stepName" placeholder="Новый этап" required>
@@ -24,6 +43,7 @@
 						<button class="btn" v-on:click="">Новая сделка</button>
 					</div>
 				</div>
+>>>>>>> 980c92c3c51eecdad83f1abe7ba594b614054515
 			</div>
 		</div>
 		<div class="bord single_process" v-else-if="step.length!=0" v-for="(item, index) in step" :key="index">
@@ -34,7 +54,7 @@
 					dcdjkcdj
 				</div> -->
 				<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
-					<button class="btn" v-on:click="">Новая сделка</button>
+					<button class="btn" v-on:click="$emit('dealId', true)">Новая сделка</button>
 				</div>
 			</div>
 		</div>
@@ -123,6 +143,9 @@ export default {
 		clearStep(){
 			this.new_step = [];
 		},
+		// newDeal(){
+		// 	this.$emit('dealId', true);
+		// },
 	},
 	mounted(){
 		axios(`http://crm.aziaimport.kz:3000/api/where/step/0`, {
@@ -209,7 +232,7 @@ export default {
 	.btn {
 		margin-top: .5em;
 		display: inline-block;
-		width: 10em;
+		width: 11em;
 		height: 2em;
 		line-height: 2em;
 		vertical-align: middle;

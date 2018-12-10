@@ -1,6 +1,6 @@
 <template>
 	<div class="main back">
-		<!-- <newDeal></newDeal> -->
+		<newDeal v-if="dealId" @dealId="newDeal"></newDeal>
 		<div class="header bord">
 			<div class="menu tex">
 				<div class="dropdown">
@@ -18,7 +18,12 @@
 			<nuxt-link to="/" class="menu tex" style="color: red; position: absolute; right: 0"	>Выход</nuxt-link>
 		</div>
 		<div class="body">
+<<<<<<< HEAD
+			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @dealId="newDeal"></process>
+			
+=======
 			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert"></process>
+>>>>>>> 980c92c3c51eecdad83f1abe7ba594b614054515
 		</div>
 	</div>
 </template>
@@ -32,7 +37,8 @@ export default {
 		return {
 			id: 0,
 			name: '',
-			procs: []
+			procs: [],
+			dealId:false
 		}
 	},
 	components: {
@@ -45,6 +51,9 @@ export default {
 			this.name = data.name;
 			this.procs.push(data);
 		},
+		newDeal(dealData){
+			this.dealId=dealData;
+		},
 		async doSmth(){
 			try{
 				var post = await axios(`http://crm.aziaimport.kz:3000/users/test`, {
@@ -55,7 +64,6 @@ export default {
 			} catch(e){
 				alert(e);
 			}
-			
 		}
 
 	},
