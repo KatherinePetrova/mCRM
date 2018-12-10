@@ -124,5 +124,6 @@ export default {
 	.deal:hover {
 		background-color: rgba(230, 230, 255, 0.8);
 		cursor: pointer;
+		color: rgb(255, 128, 0);
 	}
 </style>
