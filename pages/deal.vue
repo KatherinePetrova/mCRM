@@ -1,10 +1,10 @@
 <template>
 	<div class="drag" v-on:dragover="allowDrop($event)" v-on:drop="drop($event)">
 		<div class="deal bord tex" v-for="item in deal" draggable="true" v-on:dragstart="drag($event, item)">
-			{{ item.name }}
+			{{ item.name }},
 			{{ item.budget }}тг
 		</div>
-		<div class="deal bord tex" style="background-color: rgba(77, 166, 255, 0.5); color: white;" @click="downMore()" v-if="(deal.length%10)==0">
+		<div class="deal bord tex" style="background-color: rgba(77, 166, 255, 0.5); color: white;" @click="downMore()" v-if="(deal.length%10)==0 && deal.length!=0">
 			Загрузить далее
 		</div>
 	</div>
@@ -13,7 +13,7 @@
 <script>
 import axios from 'axios';
 export default {
-	props: ['id'],
+	props: ['id', 'newD'],
 	data(){
 		return {
 			deal: [],
@@ -24,19 +24,22 @@ export default {
 		id: function(){
 			this.deal=[];
 			this.count = 0;
-			axios(`http://crm.aziaimport.kz:3000/api/where/deal/${this.count}`, {
+			axios(`http://localhost:3000/api/where/deal/${this.count}`, {
 				data: {step: this.id},
 				method: 'post',
 				withCredentials: true
 			}).then((res)=>{
 				this.deal = res.data;
 			});
+		},
+		newD: function(){
+			this.deal.unshift(this.newD);
 		}
 	},
 	methods: {
 		downMore(){
 			this.count = this.count + 10;
-			axios(`http://crm.aziaimport.kz:3000/api/where/deal/${this.count}`, {
+			axios(`http://localhost:3000/api/where/deal/${this.count}`, {
 				data: {step: this.id},
 				method: 'post',
 				withCredentials: true
@@ -62,7 +65,7 @@ export default {
 			var item = JSON.parse(event.dataTransfer.getData("text"));
 			try {
 				item.step = this.id;
-				await axios(`http://crm.aziaimport.kz:3000/api/update/deal`, {
+				await axios(`http://localhost:3000/api/update/deal`, {
 					data: {id: item.id, step: item.step, changed: true},
 					method: 'post',
 					withCredentials: true
@@ -74,7 +77,7 @@ export default {
 		}
 	},
 	mounted(){
-		axios(`http://crm.aziaimport.kz:3000/api/where/deal/${this.count}`, {
+		axios(`http://localhost:3000/api/where/deal/${this.count}`, {
 			data: {step: this.id},
 			method: 'post',
 			withCredentials: true
@@ -119,6 +122,7 @@ export default {
 		background-color: white;
 		border-bottom-style: solid;
 		text-align: center;
+		text-transform: capitalize;
 	}
 
 	.deal:hover {

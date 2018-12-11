@@ -1,36 +1,36 @@
 <template>
 	<transition name="modal-fade">
 		<div class="bgWindow">
-			<div class="win">
+			<form class="win" v-on:submit.prevent="sendDeal">
 				<div><h3>Новая сделка</h3><h3 class="close" v-on:click="closeWin()">x</h3></div>
 				<div class="info">
 					<span>Название сделки: </span>
-					<input class="info_input" v-model="dealName" placeholder="" required>
+					<input class="info_input" v-model="form_data.name" placeholder="" required>
 				</div>
 				<div class="info">
 					<span>Заказчик: </span>
-					<select v-model="selected" class="info_input">
+					<select v-model="form_data.customer" class="info_input">
 						<option disabled value="">Выберите заказчика</option>
-						<option v-for="customer in customers" v-bind:value="customers.value">
-							{{ customers.text }}
+						<option v-bind:value="1">
+							fdg
 						</option>
 					</select>
 				</div>
 				<div class="info">
 					<span>Исполнитель: </span>
-					<select v-model="selected" class="info_input">
+					<select v-model="form_data.executor" class="info_input">
 						<option disabled value="">Выберите исполнителя</option>
-						<option v-for="executor in executors" v-bind:value="executors.value">
-							{{ executors.text }}
+						<option v-bind:value="1">
+							df
 						</option>
 					</select>
 				</div>
 				<div class="info">
 					<span>Бюджет: </span>
-					<input class="info_input" v-model="budget" placeholder="" required type="number" min="0">
+					<input class="info_input" v-model="form_data.budget" placeholder="" required type="number" min="0">
 				</div>
-				<button class="btn" v-on:click="">Добавить</button>
-			</div>
+				<input type="submit" class="btn" value="Добавить">
+			</form>
 		</div>
   	</transition>
 </template>
@@ -43,14 +43,32 @@ export default {
 			selected: '',
 			customers: [],
 			executors: [],
+			form_data: {}
 		}
 	},
+	props:["step"],
 	components: {
 
 	},
 	methods:{
 		closeWin() {
-			this.$emit('dealId', false);
+			this.$emit('deal', {clicked:false, step:this.step});
+		},
+		async sendDeal() {
+			this.form_data.step=this.step;
+			try {
+				var insert = await axios("http://localhost:3000/api/insert/deal", {
+					method: "post",
+					data: this.form_data,
+					withCredentials: true
+				});
+				console.log(insert);
+				this.form_data = {};
+				this.closeWin();
+				this.$emit('dealSent', insert.data);
+			} catch(e) {
+				console.log(e);
+			}
 		}
 	},
 	mounted(){

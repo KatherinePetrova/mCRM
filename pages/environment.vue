@@ -1,6 +1,7 @@
 <template>
 	<div class="main back">
-		<newDeal v-if="dealId" @dealId="newDeal"></newDeal>
+		<!-- <singleDeal ></singleDeal> -->
+		<newDeal v-if="deal.clicked" @deal="newDeal" :step="deal.step" @dealSent="dealSent"></newDeal>
 		<div class="header bord">
 			<div class="menu tex">
 				<div class="dropdown">
@@ -18,12 +19,7 @@
 			<nuxt-link to="/" class="menu tex" style="color: red; position: absolute; right: 0"	>Выход</nuxt-link>
 		</div>
 		<div class="body">
-<<<<<<< HEAD
-			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @dealId="newDeal"></process>
-			
-=======
-			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert"></process>
->>>>>>> 980c92c3c51eecdad83f1abe7ba594b614054515
+			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @deal="newDeal" :newD="newD"></process>
 		</div>
 	</div>
 </template>
@@ -32,31 +28,40 @@
 import axios from 'axios';
 import process from './process';
 import newDeal from './new-deal';
+import singleDeal from './singleDeal'
 export default {
 	data(){
 		return {
 			id: 0,
 			name: '',
 			procs: [],
-			dealId:false
+			deal: {
+				clicked: false,
+				step: 0
+			},
+			newD: {}
 		}
 	},
 	components: {
 		process,
 		newDeal,
+		singleDeal,
 	},
 	methods:{
+		dealSent(data){
+			this.newD = data;
+		},
 		async insert(data){
 			this.id = data.id;
 			this.name = data.name;
 			this.procs.push(data);
 		},
 		newDeal(dealData){
-			this.dealId=dealData;
+			this.deal=dealData;
 		},
 		async doSmth(){
 			try{
-				var post = await axios(`http://crm.aziaimport.kz:3000/users/test`, {
+				var post = await axios(`http://localhost:3000/users/test`, {
 					method: 'post',
 					withCredentials: true
 				});
@@ -68,7 +73,7 @@ export default {
 
 	},
 	mounted(){
-		axios(`http://crm.aziaimport.kz:3000/api/select/process/0`, {
+		axios(`http://localhost:3000/api/select/process/0`, {
 			method: 'post',
 			withCredentials: true
 		}).then((res)=>{
@@ -138,6 +143,7 @@ export default {
 		background-color: rgba(77, 166, 255, 0.5);
 		color: white;
 		text-align: center;
+		text-transform: capitalize;
 	}
 
 	.menuex:hover {

@@ -1,25 +1,25 @@
 <template>
 	<div class="main back" v-bind:class="{back_blue: login.clicked, back_blue: register.clicked}">
 		<div class="bod bord" v-bind:class="{back_image: !login.clicked, back_blue: login.clicked}">
-			<form class="circle back bord tex" style="border-color: white" v-if="login.clicked" v-on:submit.prevent="loginSend()">
+			<form class="circle back bord tex" style="border-color: white" v-if="login.clicked" v-on:submit.prevent="loginSend()" v-bind:class="{loading: loading}">
 				<label style="margin: 0.5em; font-size: 1.25em">Авторизация</label>
 				<label style="margin: 0.25em">Имя пользователя</label>
-				<input type="text" style="margin: 0.5em; width: 50%" v-model="login.data.name">
+				<input type="text" class="def" v-model="login.data.name">
 				<label style="margin: 0.25em">Пароль</label>
-				<input type="password" style="margin: 0.25em; width: 50%" v-model="login.data.password">
-				<input type="submit" style="margin: 1em; padding: 0.5em; width: 30%" value="Войти">
+				<input type="password" class="def" v-model="login.data.password">
+				<input type="submit" style="margin: 1em; padding: 0.5em; width: 10vw" value="Войти">
 				<label class="reg" @click="register.clicked=true; login.clicked=false; login.register={}">Регистрация</label>
 			</form>
-			<form class="circle back bord tex" style="height: 80vh; border-radius: 0" v-else-if="register.clicked" v-on:submit.prevent="registerSend()">
+			<form class="circle back bord tex" style="height: 80vh; border-radius: 0" v-else-if="register.clicked" v-on:submit.prevent="registerSend()" v-bind:class="{loading: loading}">
 				<label style="margin: 0.5em; font-size: 1.25em">Регистрация</label>
 				<label style="margin: 0.25em">Логин</label>
-				<input type="text" style="margin: 0.5em; width: 50%" v-model="register.data.name" required>
+				<input type="text" class="def" v-model="register.data.name" required>
 				<label style="margin: 0.25em">Пароль</label>
-				<input type="password" style="margin: 0.25em; width: 50%" v-model="register.data.password" required>
+				<input type="password" class="def" v-model="register.data.password" required>
 				<label style="margin: 0.25em">Почтовый ящик</label>
-				<input type="email" style="margin: 0.25em; width: 50%" v-model="register.data.email" required>
+				<input type="email" class="def" v-model="register.data.email" required>
 				<label style="margin: 0.25em;">Добавить дополнительную информацию +</label>
-				<input type="submit" style="transition: 1s; margin: 1em; padding: 0.5em; width: 40%" value="Зарегестрироваться">
+				<input type="submit" style="transition: 1s; margin: 1em; padding: 0.5em; width: 15vw" value="Зарегестрироваться">
 				<label class="reg" @click="register.clicked=false; login.clicked=true; login.data={}">Авторизация</label>
 			</form>
 			<div class="circle back bord tex" v-else-if="!login.clicked && !register.clicked" @click="login.clicked=true">
@@ -40,6 +40,7 @@ import axios from 'axios'
 export default {
 	data(){
 		return {
+			loading: false,
 			login: {
 				clicked: false,
 				data: {}
@@ -53,20 +54,23 @@ export default {
 	methods: {
 		async registerSend(){
 			try{
-				var insert = await axios('http://crm.aziaimport.kz:3000/users/signup', {
+				var insert = await axios('http://localhost:3000/users/signup', {
 					method: 'post',
 					data: this.register.data,
 					withCredentials: true
 				});
 				this.register.data = {};
 				this.register.clicked = false;
+				this.loading = false;
 			} catch(e){
 				alert(e);
+				this.loading = false;
 			}
 		},
 		async loginSend(){
+			this.loading = true;
 			try{
-				var insert = await axios('http://crm.aziaimport.kz:3000/users/signin', {
+				var insert = await axios('http://localhost:3000/users/signin', {
 					method: 'post',
 					data: this.login.data,
 					withCredentials: true
@@ -74,6 +78,7 @@ export default {
 				this.$router.push('/environment')
 			} catch(e){
 				alert(e);
+				this.loading = false;
 			}
 		}
 	}
@@ -82,6 +87,20 @@ export default {
 </script>
 
 <style scoped>
+	.loading {
+		animation-name: loading;
+  		animation-duration: 1.5s;
+  		animation-iteration-count: infinite;
+	}
+	@keyframes loading{
+		0%{}
+		50%{min-height: 70vh; min-width: 70vh}
+		100%{min-height: 60vh; min-width: 60vh}
+	}
+	input.def {
+		margin: 0.25em;
+		width: 13.5vw;
+	}
 	label.reg {
 		text-decoration: underline;
 	}

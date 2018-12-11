@@ -1,60 +1,34 @@
 <template>
 	<div class="process" v-bind:class="{processBack: new_process}">
-		<form v-on:submit.prevent="sendProcess()" class="circle bord" v-if="id == 0" @click="createProcess()" v-bind:class="{clicked_circle: new_process, back: new_process}">
-			<div v-if="new_process">Введите название воронки</div>
-			<div v-else>Создать новую воронку</div>
-			<input type="text" v-model="label" v-if="new_process" style="margin: 2vh">
-		</form>
+		<div class="new_step" v-if="id == 0">
+			<form v-on:submit.prevent="sendProcess()" class="circle bord" @click="createProcess()" v-bind:class="{clicked_circle: new_process, back: new_process}">
+				<div v-if="new_process">Введите название воронки</div>
+				<div v-else>Создать новую воронку</div>
+				<input type="text" v-model="label" v-if="new_process" style="margin: 2vh">
+			</form>
+		</div>
 		<div class="new_step" v-else-if="step.length==0">
-<<<<<<< HEAD
-		<form class="stepInput bord stepCircle" @submit.prevent="createStep">
-			<label>Добавить этап</label>
-			<input class="stepName" v-model="stepName" placeholder="Новый этап" required>
-			<input type="submit" class="btn" value="Добавить">
-			<input type="button" class="btn" v-on:click="sendStep()" value="Завершить">
-			<input type="button" class="btn" v-on:click="clearStep()" value="Отменить">
-		</form>
-		<div class="bord single_process tex" v-for="(item, index) in new_step" :key="index">
-			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
-			<deal :id="0"></deal>
-			<div style="" class="foot">
-				<!-- <div class="new_deal tex" v-if="index==0">
-					dcdjkcdj
-				</div> -->
-				<!-- <div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
-					<button class="btn" v-on:click="$emit('dealId', true)">Новая сделка</button>
-				</div> -->
-=======
 			<form class="stepInput bord stepCircle" @submit.prevent="createStep">
 				<label>Добавить этап</label>
 				<input class="stepName" v-model="stepName" placeholder="Новый этап" required>
 				<input type="submit" class="btn" value="Добавить">
-				<a class="btn" v-on:click="sendStep()">Завершить</a>
-				<a class="btn" v-on:click="clearStep()">Отменить</a>
+				<input type="button" class="btn" v-on:click="sendStep()" value="Завершить">
+				<input type="button" class="btn" v-on:click="clearStep()" value="Отменить">
 			</form>
 			<div class="bord single_process tex" v-for="(item, index) in new_step" :key="index">
 				<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
 				<deal :id="0"></deal>
 				<div style="" class="foot">
-					<!-- <div class="new_deal tex" v-if="index==0">
-						dcdjkcdj
-					</div> -->
-					<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
-						<button class="btn" v-on:click="">Новая сделка</button>
-					</div>
 				</div>
->>>>>>> 980c92c3c51eecdad83f1abe7ba594b614054515
 			</div>
 		</div>
 		<div class="bord single_process" v-else-if="step.length!=0" v-for="(item, index) in step" :key="index">
 			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
-			<deal :id="item.id"></deal>
+			<deal :id="item.id" v-if="index==0" :newD="newD"></deal>
+			<deal :id="item.id" v-else="index==0"></deal>
 			<div style="" class="foot">
-				<!-- <div class="new_deal tex" v-if="index==0">
-					dcdjkcdj
-				</div> -->
 				<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
-					<button class="btn" v-on:click="$emit('dealId', true)">Новая сделка</button>
+					<button class="btn" v-on:click="$emit('deal', {step: item.id, clicked: true})">Новая сделка</button>
 				</div>
 			</div>
 		</div>
@@ -69,7 +43,7 @@ export default {
 	components: {
 		deal
 	},
-	props: ['id', 'new_process', 'new_step'],
+	props: ['id', 'new_process', 'new_step', 'newD'],
 	data(){
 		return {
 			stepName: '',
@@ -80,17 +54,16 @@ export default {
 	watch: {
 		id: function(){
 			console.log(this.id);
-			axios(`http://crm.aziaimport.kz:3000/api/where/step/0`, {
+			axios(`http://localhost:3000/api/where/step/0`, {
 				data: {process: this.id},
 				method: 'post',
 				withCredentials: true
 			}).then((res)=>{
 				console.log(res.data);
 				this.step = res.data;
-				setTimeout(this.color, 100);
 			});
-			
-		},
+			setTimeout(this.color, 100);
+		}
 	},
 	methods: {
 		getRandomInt(min, max) {
@@ -111,7 +84,7 @@ export default {
 		},
 		async sendProcess(){
 			try{
-				var data = await axios('http://crm.aziaimport.kz:3000/api/insert/process', {
+				var data = await axios('http://localhost:3000/api/insert/process', {
 					data: {name: this.label},
 					method: 'post',
 					withCredentials: true
@@ -128,12 +101,13 @@ export default {
 		async sendStep(){
 			try{
 				for(var i=0; i<this.new_step.length; i++){
-					var insert = await axios('http://crm.aziaimport.kz:3000/api/insert/step', {
+					var insert = await axios('http://localhost:3000/api/insert/step', {
 						data: this.new_step[i],
 						method: 'post',
 						withCredentials: true
 					});
 					await this.step.push(insert.data);
+					this.color();
 				}
 			} catch(e){
 				alert(e)
@@ -148,15 +122,14 @@ export default {
 		// },
 	},
 	mounted(){
-		axios(`http://crm.aziaimport.kz:3000/api/where/step/0`, {
+		axios(`http://localhost:3000/api/where/step/0`, {
 			data: {process: this.id},
 			method: 'post',
 			withCredentials: true
 		}).then((res)=>{
 			this.step = res.data
-			setTimeout(this.color, 100);
 		});
-		
+		setTimeout(this.color, 100);
 	}
 }
 </script>
@@ -188,9 +161,9 @@ export default {
 		flex-direction: column;
 	}
 	.single_process {
-		min-width: 300px;
 		width: 100%;
 		display: flex;
+		min-width: 300px;
 		position: relative;
 		height: 100%;
 		justify-content: center;
@@ -200,7 +173,7 @@ export default {
 		border-style: solid;
 		border-color: white;
 		color: rgb(77, 166, 255);
-		text-align: center;
+		text-transform: capitalize;
 	}
 
 	.process {
@@ -266,7 +239,6 @@ export default {
 			0 1px 1px 1px rgba(255,255,255,.4),
 			0 -1px 1px 1px rgba(0,0,0,.1);
 		}
-
 	.circle {
 		position: absolute;
 		height: 50vh;
