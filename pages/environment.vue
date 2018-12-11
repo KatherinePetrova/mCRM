@@ -1,6 +1,6 @@
 <template>
 	<div class="main back">
-		<!-- <singleDeal ></singleDeal> -->
+		<singleDeal v-if="infoDeal" @infoDeal="infoDeal"></singleDeal>
 		<newDeal v-if="deal.clicked" @deal="newDeal" :step="deal.step" @dealSent="dealSent"></newDeal>
 		<div class="header bord">
 			<div class="menu tex">
@@ -19,7 +19,7 @@
 			<nuxt-link to="/" class="menu tex" style="color: red; position: absolute; right: 0"	>Выход</nuxt-link>
 		</div>
 		<div class="body">
-			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @deal="newDeal" :newD="newD"></process>
+			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @deal="newDeal" :newD="newD" @infoDeal="infoDeal"></process>
 		</div>
 	</div>
 </template>
@@ -35,6 +35,7 @@ export default {
 			id: 0,
 			name: '',
 			procs: [],
+			infoDeal: false,
 			deal: {
 				clicked: false,
 				step: 0
@@ -58,6 +59,9 @@ export default {
 		},
 		newDeal(dealData){
 			this.deal=dealData;
+		},
+		infoDeal(infdeal){
+			this.infoDeal=infdeal;
 		},
 		async doSmth(){
 			try{

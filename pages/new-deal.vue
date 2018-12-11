@@ -1,7 +1,7 @@
 <template>
 	<transition name="modal-fade">
 		<div class="bgWindow">
-			<form class="win" v-on:submit.prevent="sendDeal">
+			<form class="win bord" v-on:submit.prevent="sendDeal">
 				<div><h3>Новая сделка</h3><h3 class="close" v-on:click="closeWin()">x</h3></div>
 				<div class="info">
 					<span>Название сделки: </span>
@@ -105,17 +105,17 @@ export default {
 	}
 	.win {
 		z-index: 1050;
-		background-color: rgba(77, 166, 255, 0.8);
+		background-color: white;
 		height: 50%;
 		width: 50%;
-		border-radius: 2em;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
 		flex-direction: column;
-		color: white;
+		color: rgb(77, 166, 255);
 		padding: 0 8em;
 		position: relative;
+		border-style: solid;
 	}
 	.info {
 		width: 100%;

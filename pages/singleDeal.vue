@@ -1,25 +1,18 @@
 <template>
 	<transition name="modal-fade">
 		<div class="bgWindow">
-			<div class="win">
-				<div><h3>Новая сделка</h3><h3 class="close" v-on:click="closeWin()">x</h3></div>
-				<div class="info">
-					<span>Название сделки: </span>
-					<span></span>
+			<div class="win bord">
+				<div class="dealInfo">
+					<div class="dealName">Сделка</div>
+					<nav v-bind:class="activ" v-on:click.prevent>
+						<a href="#">Основное</a>
+						<a href="#">Доп. инф-ия</a>
+					</nav>
+					<div class="basic"></div>
+					<div class="exInfo"></div>
+					<div class="company"></div>
 				</div>
-				<div class="info">
-					<span>Заказчик: </span>
-					<span></span>
-				</div>
-				<div class="info">
-					<span>Исполнитель: </span>
-					<span></span>
-				</div>
-				<div class="info">
-					<span>Бюджет: </span>
-					<span></span>
-				</div>
-				<input type="submit" class="btn" value="Добавить">
+				<div class="dealNotes"></div>
 			</div>
 		</div>
   	</transition>
@@ -39,7 +32,7 @@ export default {
 	},
 	methods:{
 		closeWin() {
-			this.$emit('deal', {clicked:false, step:this.step});
+			this.$emit('infoDeal', false);
 		},
 	},
 	mounted(){
@@ -76,31 +69,22 @@ export default {
 	}
 	.win {
 		z-index: 1050;
-		background-color: rgba(77, 166, 255, 0.8);
-		height: 50%;
-		width: 50%;
-		border-radius: 2em;
+		background-color: white;
+		height: 35em;
+		width: 80em;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
-		flex-direction: column;
-		color: white;
+		color: rgb(77, 166, 255);
 		padding: 0 8em;
 		position: relative;
 	}
-	.info {
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-	}
-	.info_input {
-		width: 17em;
-		height: 2em;
-	}
+
 	.close {
 		cursor: pointer;
 		position: absolute;
 		top: .5em;
 		right: 1em;
+
 	}
 </style>

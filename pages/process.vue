@@ -24,8 +24,8 @@
 		</div>
 		<div class="bord single_process" v-else-if="step.length!=0" v-for="(item, index) in step" :key="index">
 			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
-			<deal :id="item.id" v-if="index==0" :newD="newD"></deal>
-			<deal :id="item.id" v-else="index==0"></deal>
+			<deal :id="item.id" v-if="index==0" :newD="newD" v-on:click="$emit('infoDeal',true)"></deal>
+			<deal :id="item.id" v-else="index==0" v-on:click="$emit('infoDeal',true)"></deal>
 			<div style="" class="foot">
 				<div style="height: 50%; display: flex; align-items: center; justify-content: center;" v-if="index==0">
 					<button class="btn" v-on:click="$emit('deal', {step: item.id, clicked: true})">Новая сделка</button>
