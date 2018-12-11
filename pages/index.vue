@@ -54,7 +54,7 @@ export default {
 	methods: {
 		async registerSend(){
 			try{
-				var insert = await axios('http://localhost:3000/users/signup', {
+				var insert = await axios('http://crm.aziaimport.kz:3000/users/signup', {
 					method: 'post',
 					data: this.register.data,
 					withCredentials: true
@@ -70,7 +70,7 @@ export default {
 		async loginSend(){
 			this.loading = true;
 			try{
-				var insert = await axios('http://localhost:3000/users/signin', {
+				var insert = await axios('http://crm.aziaimport.kz:3000/users/signin', {
 					method: 'post',
 					data: this.login.data,
 					withCredentials: true

@@ -54,7 +54,7 @@ export default {
 	watch: {
 		id: function(){
 			console.log(this.id);
-			axios(`http://localhost:3000/api/where/step/0`, {
+			axios(`http://crm.aziaimport.kz:3000/api/where/step/0`, {
 				data: {process: this.id},
 				method: 'post',
 				withCredentials: true
@@ -84,7 +84,7 @@ export default {
 		},
 		async sendProcess(){
 			try{
-				var data = await axios('http://localhost:3000/api/insert/process', {
+				var data = await axios('http://crm.aziaimport.kz:3000/api/insert/process', {
 					data: {name: this.label},
 					method: 'post',
 					withCredentials: true
@@ -101,7 +101,7 @@ export default {
 		async sendStep(){
 			try{
 				for(var i=0; i<this.new_step.length; i++){
-					var insert = await axios('http://localhost:3000/api/insert/step', {
+					var insert = await axios('http://crm.aziaimport.kz:3000/api/insert/step', {
 						data: this.new_step[i],
 						method: 'post',
 						withCredentials: true
@@ -122,7 +122,7 @@ export default {
 		// },
 	},
 	mounted(){
-		axios(`http://localhost:3000/api/where/step/0`, {
+		axios(`http://crm.aziaimport.kz:3000/api/where/step/0`, {
 			data: {process: this.id},
 			method: 'post',
 			withCredentials: true

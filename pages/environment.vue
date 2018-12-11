@@ -65,7 +65,7 @@ export default {
 		},
 		async doSmth(){
 			try{
-				var post = await axios(`http://localhost:3000/users/test`, {
+				var post = await axios(`http://crm.aziaimport.kz:3000/users/test`, {
 					method: 'post',
 					withCredentials: true
 				});
@@ -77,7 +77,7 @@ export default {
 
 	},
 	mounted(){
-		axios(`http://localhost:3000/api/select/process/0`, {
+		axios(`http://crm.aziaimport.kz:3000/api/select/process/0`, {
 			method: 'post',
 			withCredentials: true
 		}).then((res)=>{

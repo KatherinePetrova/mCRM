@@ -36,7 +36,7 @@ export default {
 		},
 	},
 	mounted(){
-		axios.post(`http://localhost:3000/api/select/process/0`).then((res)=>{
+		axios.post(`http://crm.aziaimport.kz:3000/api/select/process/0`).then((res)=>{
 			this.procs = res.data
 		});
 		document.addEventListener("click",() => this.closeWin());

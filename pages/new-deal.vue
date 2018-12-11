@@ -57,7 +57,7 @@ export default {
 		async sendDeal() {
 			this.form_data.step=this.step;
 			try {
-				var insert = await axios("http://localhost:3000/api/insert/deal", {
+				var insert = await axios("http://crm.aziaimport.kz:3000/api/insert/deal", {
 					method: "post",
 					data: this.form_data,
 					withCredentials: true
@@ -72,7 +72,7 @@ export default {
 		}
 	},
 	mounted(){
-		axios.post(`http://localhost:3000/api/select/process/0`).then((res)=>{
+		axios.post(`http://crm.aziaimport.kz:3000/api/select/process/0`).then((res)=>{
 			this.procs = res.data
 		});
 		document.addEventListener("click",() => this.closeWin());
