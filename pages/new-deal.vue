@@ -2,7 +2,7 @@
 	<transition name="modal-fade">
 		<div class="bgWindow">
 			<form class="win bord" v-on:submit.prevent="sendDeal">
-				<div><h3>Новая сделка</h3><h3 class="close" v-on:click="closeWin()">x</h3></div>
+				<div><h3>Новая сделка</h3><h3 class="close" v-on:click="closeWin()" style="text-decoration: underline;">Закрыть</h3></div>
 				<div class="info">
 					<span>Название сделки: </span>
 					<input class="info_input" v-model="form_data.name" placeholder="" required>
@@ -10,18 +10,18 @@
 				<div class="info">
 					<span>Заказчик: </span>
 					<select v-model="form_data.customer" class="info_input">
-						<option disabled value="">Выберите заказчика</option>
-						<option v-bind:value="1">
-							fdg
+						<option disabled>Выберите заказчика</option>
+						<option v-for="item in customers" v-bind:value="item.id">
+							{{item.name}}
 						</option>
 					</select>
 				</div>
 				<div class="info">
 					<span>Исполнитель: </span>
 					<select v-model="form_data.executor" class="info_input">
-						<option disabled value="">Выберите исполнителя</option>
-						<option v-bind:value="1">
-							df
+						<option disabled>Выберите исполнителя</option>
+						<option v-for="item in executors" v-bind:value="item.id">
+							{{item.name}}
 						</option>
 					</select>
 				</div>
@@ -72,8 +72,17 @@ export default {
 		}
 	},
 	mounted(){
-		axios.post(`http://crm.aziaimport.kz:3000/api/select/process/0`).then((res)=>{
-			this.procs = res.data
+		axios(`http://crm.aziaimport.kz:3000/api/select/customer/0`, {
+			method: 'post',
+			withCredentials: true
+		}).then((res)=>{
+			this.customers = res.data;
+		});
+		axios(`http://crm.aziaimport.kz:3000/api/select/executor/0`, {
+			method: 'post',
+			withCredentials: true
+		}).then((res)=>{
+			this.executors = res.data;
 		});
 		document.addEventListener("click",() => this.closeWin());
 		document.querySelector('.win').addEventListener("click",(event) => event.stopPropagation());
