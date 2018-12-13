@@ -1,5 +1,18 @@
 <template>
 	<div class="drag" v-on:dragover="allowDrop($event)" v-on:drop="drop($event)">
+		<div class="deal bord tex" v-if="first" @click="show(true)" v-bind:class="{fast: form.show}">
+			<label v-if="form.show==false">Быстрое добавление</label>
+			<form class="fast" v-else>
+				<input type="text" class="fast" placeholder="Название сделки">
+				<input type="text" class="fast" placeholder="Контакт">
+				<input type="text" class="fast" placeholder="Исполнитель">
+				<input type="text" class="fast" placeholder="Бюзжет">
+				<div style="display: flex; justify-content: space-around; width: 100%">
+					<input type="submit" class="btn">
+					<input type="button" @click="show(false)" value="Отменить" class="btn">
+				</div>
+			</form>
+		</div>
 		<div class="deal bord tex" v-for="item in deal" draggable="true" v-on:dragstart="drag($event, item)">
 			{{ item.name }},
 			{{ item.budget }}тг
@@ -13,11 +26,14 @@
 <script>
 import axios from 'axios';
 export default {
-	props: ['id', 'newD'],
+	props: ['id', 'newD', 'first'],
 	data(){
 		return {
 			deal: [],
-			count: 0
+			count: 0,
+			form: {
+				show: false
+			}
 		}
 	},
 	watch: {
@@ -37,6 +53,9 @@ export default {
 		}
 	},
 	methods: {
+		show(bol){
+			this.form.show=bol;
+		},
 		downMore(){
 			this.count = this.count + 10;
 			axios(`http://crm.aziaimport.kz:3000/api/where/deal/${this.count}`, {
@@ -89,6 +108,33 @@ export default {
 </script>
 
 <style scoped>
+	div.fast {
+		border-style: dashed;
+		color: rgb(150, 150, 150);
+		border-color: rgb(150, 150, 150);
+		transition: 1s;
+		text-transform: none;
+		min-height: 35%;
+	}
+	form.fast {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+		padding: 0.5em;
+		height: 100%;
+		width: 100%;
+	}
+	input.fast {
+		width: 100%;
+		height: 10%;
+		margin-bottom: 0.25em;
+		font-size: 1.1em; 
+	}
+	.btn {
+
+	}
 	::-webkit-scrollbar {
 	    width: 0px;
 	}

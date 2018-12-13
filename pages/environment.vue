@@ -1,7 +1,6 @@
 <template>
 	<div class="main back">
 		<singleDeal v-if="infoDeal" @infoDeal="infoDeal"></singleDeal>
-		<newDeal v-if="deal.clicked" @deal="newDeal" :step="deal.step" @dealSent="dealSent"></newDeal>
 		<div class="header bord">
 			<div class="menu tex">
 				<div class="dropdown">
@@ -27,7 +26,6 @@
 <script>
 import axios from 'axios';
 import process from './process';
-import newDeal from './new-deal';
 import singleDeal from './singleDeal'
 export default {
 	data(){
@@ -45,7 +43,6 @@ export default {
 	},
 	components: {
 		process,
-		newDeal,
 		singleDeal,
 	},
 	methods:{
