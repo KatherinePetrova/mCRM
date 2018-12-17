@@ -15,7 +15,7 @@
 			<div class="menu tex" @click="doSmth()">Тест</div>
 			<div class="menu tex"></div>
 			<div class="menu tex"></div>
-			<nuxt-link to="/" class="menu tex" style="color: red; position: absolute; right: 0"	>Выход</nuxt-link>
+			<div class="menu tex" style="color: red; position: absolute; right: 0"	@click="exit()">Выход</div>
 		</div>
 		<div class="body">
 			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @deal="newDeal" :newD="newD" @infoDeal="infoDeal"></process>
@@ -46,6 +46,17 @@ export default {
 		singleDeal,
 	},
 	methods:{
+		exit(){
+			axios('http://crm.aziaimport.kz:3000/users/exit', {
+				method: 'post',
+				withCredentials: true
+			}).then((res)=>{
+				this.$router.push('/');
+			}).catch((res)=>{
+				alert(res);
+				console.log(res);
+			});
+		},
 		dealSent(data){
 			this.newD = data;
 		},
