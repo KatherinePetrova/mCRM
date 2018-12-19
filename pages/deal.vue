@@ -1,8 +1,8 @@
 <template>
 	<div class="drag" v-on:dragover="allowDrop($event)" v-on:drop="drop($event)">
-		<div class="deal bord tex" v-if="first"  v-bind:class="{fast: show}">
+		<div class="deal bord tex" v-if="first"  v-bind:class="{fast: show}" style="border-left-style: dashed; border-right-style: dashed; border-bottom-style: dashed; background-color: rgba(77, 166, 255, 0.2)">
 			<div style="width: 100%; height: 5em; display: flex; justify-content: center; align-items: center; position: relative;" v-if="!show" @click="show=true">
-				<label>Быстрое добавление</label>
+				Быстрое добавление
 			</div>
 			<form class="fast" v-else @submit.prevent="sendDeal">
 				<input type="text" class="fast" placeholder="Название сделки" v-model="form.name">
@@ -21,7 +21,7 @@
 				</div>
 			</form>
 		</div>
-		<div class="deal bord tex" v-for="item in deal" draggable="true" v-on:dragstart="drag($event, item)">
+		<div class="deal bord tex" v-for="item in deal" draggable="true" v-on:dragstart="drag($event, item)" @click="$emit('openSingle', item)">
 			{{ item.name }},
 			{{ item.budget }}тг
 		</div>

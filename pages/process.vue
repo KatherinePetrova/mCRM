@@ -1,5 +1,6 @@
 <template>
 	<div class="process" v-bind:class="{processBack: new_process}">
+		<singleDeal :show="false" :deal="single" v-if="id!=0"></singleDeal>
 		<div class="new_step" v-if="id == 0">
 			<form v-on:submit.prevent="sendProcess()" class="circle bord" @click="createProcess()" v-bind:class="{clicked_circle: new_process, back: new_process}">
 				<div v-if="new_process">Введите название воронки</div>
@@ -24,8 +25,8 @@
 		</div>
 		<div class="bord single_process" v-else-if="step.length!=0" v-for="(item, index) in step" :key="index">
 			<div style="height: 5%; display: flex; justify-content: center; align-items: center;">{{ item.name }}</div>
-			<deal :id="item.id" v-if="index==0" :first="true" :show='false' :newD="newD" v-on:click="$emit('infoDeal',true)"></deal>
-			<deal :id="item.id" v-else :newD="newD" v-on:click="$emit('infoDeal',true)"></deal>
+			<deal :id="item.id" v-if="index==0" :first="true" :show='false' :newD="newD"  @openSingle="openSingle"></deal>
+			<deal :id="item.id" v-else :newD="newD"  @openSingle="openSingle"></deal>
 			<div style="" class="foot">
 			</div>
 		</div>
@@ -35,17 +36,21 @@
 <script>
 import axios from 'axios';
 import deal from './deal';
-
+import singleDeal from './singleDeal'
 export default {
 	components: {
-		deal
+		deal,
+		singleDeal
 	},
 	props: ['id', 'new_process', 'new_step', 'newD'],
 	data(){
 		return {
 			stepName: '',
 			step: [],
-			label: ''
+			label: '',
+			single: {
+				name: 'Новая'
+			}
 		}
 	},
 	watch: {
@@ -63,6 +68,9 @@ export default {
 		}
 	},
 	methods: {
+		openSingle(data){
+			this.single = data;
+		},
 		getRandomInt(min, max) {
   			return Math.floor(Math.random() * (max - min)) + min;
 		},

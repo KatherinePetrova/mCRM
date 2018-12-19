@@ -1,6 +1,5 @@
 <template>
 	<div class="main back">
-		<singleDeal v-if="infoDeal" @infoDeal="infoDeal"></singleDeal>
 		<div class="header bord">
 			<div class="menu tex">
 				<div class="dropdown">
@@ -18,7 +17,7 @@
 			<div class="menu tex" style="color: red; position: absolute; right: 0"	@click="exit()">Выход</div>
 		</div>
 		<div class="body">
-			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" @deal="newDeal" :newD="newD" @infoDeal="infoDeal"></process>
+			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" :newD="newD"></process>
 		</div>
 	</div>
 </template>
@@ -26,7 +25,6 @@
 <script>
 import axios from 'axios';
 import process from './process';
-import singleDeal from './singleDeal'
 export default {
 	data(){
 		return {
@@ -42,8 +40,7 @@ export default {
 		}
 	},
 	components: {
-		process,
-		singleDeal,
+		process
 	},
 	methods:{
 		exit(){
