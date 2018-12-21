@@ -8,8 +8,14 @@
 				<div>Последнее изменение: {{deal.changed}}</div>
 			</div>
 			<div class="rows">
-				<div class="vklad bord tex" v-bind:class="{selected_vklad: vklad==2}" @click="vklad=2">
+				<div class="vklad bord tex" @click="showTab">
 					+
+				</div>
+				<form class="vklad bord tex selected_vklad" v-if="newTab.show" v-bind:class="{selected_vklad: vklad==4}" @submit.prevent="createTab">
+					<input type="text" @focusout="newTab.show = false; vklad=0" v-model="newTab.data" refs='opo'>
+				</form>
+				<div class="vklad bord tex" v-for="item in tab" v-bind:class="{selected_vklad: vklad==2}" @click="vklad=2">
+					{{item.name}}
 				</div>
 				<div class="vklad bord tex" v-bind:class="{selected_vklad: vklad==1}" @click="vklad=1">
 					Дополнительная информация
@@ -18,24 +24,45 @@
 					Основное
 				</div>
 			</div>
-			<div class="left_main bord">
+			<div class="left_main bord" v-if="vklad==0">
 				<div class="main_info bord">
-					<label>Ответственный: Мансур</label>
+					<label>Ответственный: {{responsible[0].text}}</label>
 					<label>Бюджет: {{deal.budget}}тг</label>
 					<label>Дата создания: {{deal.created}}</label>
 				</div>
 				<div class="main_info bord">
 					<h2>Клиент: {{customer.name}}</h2>
-					<label v-for="item in add_customer">{{item.name}}: {{item.text}}</label>
+					<label v-for="item in add_customer">{{deleteDown(item.name)}}: {{item.text}}</label>
 				</div>
 				<div class="main_info bord">
 					<h2>Исполнитель: {{executor.name}}</h2>
-					<label v-for="item in add_executor">{{item.name}}: {{item.text}}</label>
+					<label v-for="item in add_executor">{{deleteDown(item.name)}}: {{item.text}}</label>
 				</div>
+			</div>
+			<div class="left_main bord" v-else-if="vklad==1">
+				<div class="main_info bord">
+					<label v-if="add_document.length==0">Дополнительная информация не найдена</label>
+					<label v-for="item in add_document">{{deleteDown(item.name)}}: {{item.text}}</label>
+					<form v-if="add_form.show" @submit.prevent="sendDocument">
+						<input type="text" placeholder="Тема" v-model="add_form.data.name" required> :
+						<input type="text" placeholder="Комментарий" v-model="add_form.data.text" required>
+						<label class="tex add" style="margin-left: 10px" @click="add_form.show=false">Отменить</label>
+					</form>
+					<label class="tex add" @click="add_form.show=true">Добавить +</label>
+				</div>
+			</div>
+			<div class="left_main bord" v-else>
+				Приветик
 			</div>
 		</div>
 		<div class="right" v-if="show">
-			
+			<div class="chat">
+				
+			</div>
+			<form class="chat">
+				<textarea class="chat" placeholder="Примечание"></textarea>
+				<input type="file" class="chat">
+			</form>
 		</div>
 	</div>
 </template>
@@ -48,8 +75,22 @@ export default {
 			vklad: 0,
 			executor: {},
 			customer: {},
-			add_customer: [],
-			step: {}
+			add_customer: {},
+			add_executor: {},
+			step: {},
+			add_document: {},
+			responsible: [{
+				text: 'Не указано'
+			}],
+			tab: [],
+			newTab: {
+				show: false,
+				data: {}
+			},
+			add_form: {
+				show: false,
+				data: {}
+			}
 		}
 	},
 	props:['show', 'deal'],
@@ -67,16 +108,48 @@ export default {
 					withCredentials: true
 				});
 
+				var executor_query = await axios(`http://crm.aziaimport.kz:3000/api/select/executor/${this.deal.executor}`, {
+					method: 'post',
+					withCredentials: true
+				});
+
 				var add_customer_query = await axios(`http://crm.aziaimport.kz:3000/api/where/add_customer/0`, {
 					method: 'post',
 					withCredentials: true,
 					data: {customer: this.deal.customer}
 				});
 
+				var add_user_query = await axios(`http://crm.aziaimport.kz:3000/api/where/add_user/0`, {
+					method: 'post',
+					withCredentials: true,
+					data: {user: this.deal.responsible}
+				});
+
+				var add_executor_query = await axios(`http://crm.aziaimport.kz:3000/api/where/add_executor/0`, {
+					method: 'post',
+					withCredentials: true,
+					data: {executor: this.deal.executor}
+				});
+
+				var add_document_query = await axios(`http://crm.aziaimport.kz:3000/api/where/add_document/0`, {
+					method: 'post',
+					withCredentials: true,
+					data: {deal: this.deal.id}
+				});
+
 				this.step = await step_query.data;
 				this.customer = await customer_query.data;
 				this.add_customer = await add_customer_query.data;
+				this.responsible = await add_user_query.data;
+				this.executor = await executor_query.data;
+				this.add_executor = await add_executor_query.data;
+				this.add_document = await add_document_query.data;
 
+				if(this.responsible.length==0){
+					this.responsible = [{text: 'Не указан'}]
+				}
+
+				this.vklad = 0;
 				this.show = true;
 
 			} catch(e){
@@ -85,6 +158,44 @@ export default {
 		}
 	},
 	methods:{
+		showTab(){
+			this.newTab.show=true;
+			this.$nextTick(() => this.$refs.opo.focus());
+		},
+		async sendDocument(){
+			try{
+				this.add_form.data.deal = this.deal.id;
+				var insert = await axios(`http://crm.aziaimport.kz:3000/api/insert/add_document`, {
+					method: 'post',
+					withCredentials: true,
+					data: this.add_form.data
+				});
+
+				this.add_document.push(insert.data);
+				this.add_form.data = {};
+				this.add_form.show = false;
+
+			} catch(e){
+				alert(e);
+			}
+			
+
+		},
+		deleteDown(str){
+			if(typeof str=='undefined'){
+				return ''
+			} else {
+				var result = str.split('');
+				for(var i=0; i<result.length; i++){
+					if(result[i]=='_'){
+						result[i] = " "
+					}
+				}
+				result  = result.join('');
+				return result
+			}
+			
+		}
 	},
 	mounted(){
 	}
@@ -93,6 +204,25 @@ export default {
 </script>
 
 <style scoped>
+	label.add {
+		cursor: pointer;
+	}
+	textarea.chat {
+		height: 70%;
+		width: 100%;
+		margin-bottom: 5px;
+		resize: none;
+	}
+	form.chat {
+		display: flex;
+		height: 20%;
+		width: 100%;
+		flex-direction: column;	
+	}
+	div.chat {
+		height: 80%;
+		width: 100%;
+	}
 	div.main_info {
 		min-height: calc(20% + 10px);
 		width: 95%;
@@ -105,6 +235,10 @@ export default {
 	div.right {
 		height: 100%;
 		width: 40%;
+		background-color: rgb(251, 251, 251);
+		padding: 10px;
+		display: flex;
+		flex-direction: column;
 	}
 	div.left_main {
 		padding-top: 10px;
@@ -115,7 +249,6 @@ export default {
 		background-color: rgb(242, 242, 242);
 		display: flex;
 		flex-direction: column;
-		border-right-style: solid;
 		overflow-y: auto;
 	}
 	div.left {

@@ -5,16 +5,16 @@
 				Быстрое добавление
 			</div>
 			<form class="fast" v-else @submit.prevent="sendDeal">
-				<input type="text" class="fast" placeholder="Название сделки" v-model="form.name">
-				<input class="fast" type="text" list="customer" v-model="form.customer" @input="like('customer', form.customer)" placeholder="Контакт">
+				<input type="text" class="fast" placeholder="Название сделки" v-model="form.name" required>
+				<input class="fast" type="text" list="customer" v-model="form.customer" @input="like('customer', form.customer)" placeholder="Контакт" required>
 				<datalist id="customer">
     				<option v-for="item in customer" :value="item.id">{{item.name}}</option>
    				</datalist>
-				<input class="fast" type="text" list="executor" v-model="form.executor" @input="like('executor', form.executor)" placeholder="Исполнитель">
+				<input class="fast" type="text" list="executor" v-model="form.executor" @input="like('executor', form.executor)" placeholder="Исполнитель" required>
 				<datalist id="executor">
     				<option v-for="item in executor" :value="item.id">{{item.name}}</option>
    				</datalist>
-				<input type="number" class="fast" placeholder="Бюджет" min="0" v-model="form.budget">
+				<input type="number" class="fast" placeholder="Бюджет" min="0" v-model="form.budget" required>
 				<div style="display: flex; justify-content: space-around; width: 100%">
 					<input type="submit" class="btn">
 					<input type="button" @click="show=false" value="Отменить" class="btn">
