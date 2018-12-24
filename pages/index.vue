@@ -7,7 +7,7 @@
 				<input type="text" class="def" v-model="login.data.name">
 				<label style="margin: 0.25em">Пароль</label>
 				<input type="password" class="def" v-model="login.data.password">
-				<input type="submit" style="margin: 1em; padding: 0.5em; width: 10vw" value="Войти">
+				<input type="submit" style="margin: 1em; padding: 0.5em; width: 150px" value="Войти">
 				<label class="reg" @click="register.clicked=true; login.clicked=false; login.register={}">Регистрация</label>
 			</form>
 			<form class="circle back bord tex" style="height: 80vh; border-radius: 0" v-else-if="register.clicked" v-on:submit.prevent="registerSend()" v-bind:class="{loading: loading}">
@@ -19,7 +19,7 @@
 				<label style="margin: 0.25em">Почтовый ящик</label>
 				<input type="email" class="def" v-model="register.data.email" required>
 				<label style="margin: 0.25em;">Добавить дополнительную информацию +</label>
-				<input type="submit" style="transition: 1s; margin: 1em; padding: 0.5em; width: 15vw" value="Зарегестрироваться">
+				<input type="submit" style="transition: 1s; margin: 1em; padding: 0.5em; width: 150px" value="Зарегестрироваться">
 				<label class="reg" @click="register.clicked=false; login.clicked=true; login.data={}">Авторизация</label>
 			</form>
 			<div class="circle back bord tex" v-else-if="!login.clicked && !register.clicked" @click="login.clicked=true">
@@ -99,7 +99,8 @@ export default {
 	}
 	input.def {
 		margin: 0.25em;
-		width: 13.5vw;
+		min-width: 150px;
+		width: 13vw;
 	}
 	label.reg {
 		text-decoration: underline;
@@ -138,8 +139,10 @@ export default {
 
 	div.circle {
 		position: absolute;
-		min-height: 60vh;
-		min-width: 60vh;
+		height: 60vh;
+		width: 60vh;
+		min-height: 400px;
+		min-width: 400px;
 		border-style: solid;
 		border-radius: 50%;
 		display: flex;
@@ -153,8 +156,10 @@ export default {
 
 	form.circle {
 		position: absolute;
-		min-height: 60vh;
-		min-width: 60vh;
+		height: 60vh;
+		width: 60vh;
+		min-height: 400px;
+		min-width: 400px;
 		border-style: solid;
 		border-radius: 50%;
 		display: flex;

@@ -5,7 +5,7 @@
 			<div class="name">
 				<h1 style="font-size: 2.5em">{{deal.name}}</h1>
 				<div>Этап: {{step.name}}</div>
-				<div>Последнее изменение: {{deal.changed}}</div>
+				<div>Последнее изменение: {{dateConverter(deal.changed)}}</div>
 			</div>
 			<div class="rows">
 				<div class="vklad bord tex" @click="newTab.show=true">
@@ -29,7 +29,7 @@
 				<div class="main_info bord">
 					<label>Ответственный: {{responsible[0].text}}</label>
 					<label>Бюджет: {{deal.budget}}тг</label>
-					<label>Дата создания: {{deal.created}}</label>
+					<label>Дата создания: {{dateConverter(deal.created)}}</label>
 				</div>
 				<div class="main_info bord">
 					<h2>Клиент: {{customer.name}}</h2>
@@ -68,7 +68,7 @@
 			</div>
 		</div>
 		<div class="right" v-if="show">
-			<div class="chat">
+			<div class="chat" >
 				<div v-for="item in changy" style="margin-bottom: 10px">
 					<label class="changy">{{item.inf}}</label>
 					<label class="changy">{{item.date}}</label>
@@ -172,6 +172,12 @@ export default {
 					data: {deal: this.deal.id}
 				});
 
+				var comment_query = await axios(`http://crm.aziaimport.kz:3000/api/where/comment/0`, {
+					method: 'post',
+					withCredentials: true,
+					data: {deal: this.deal.id}
+				});
+
 				this.step = await step_query.data;
 				this.customer = await customer_query.data;
 				this.add_customer = await add_customer_query.data;
@@ -187,7 +193,11 @@ export default {
 					this.changy.push(await this.changyPreo(changy_query.data[i]));
 				}
 
-				console.log(this.changy);
+				for(var i=0; i<comment_query.data.length; i++){
+					this.changy.push(comment_query.data[i]);
+				}
+
+				
 				if(this.responsible.length==0){
 					this.responsible = [{text: 'Не указан'}]
 				}
@@ -201,6 +211,27 @@ export default {
 		}
 	},
 	methods:{
+		dateConverter(str, bol){
+			var res = str.split('T');
+
+			var date = res[0].split('-');
+			var year = date[0];
+			var month = date[1] - 1;
+			var day = date[2];
+
+			var time = res[1].split(':');
+			var hour = time[0];
+			var minute = time[1];
+			var second = time[2];
+
+			second = second.split('.');
+			second = second[0];
+
+			var months = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря']
+
+			
+			return `${day} ${months[month]} ${year} года, ${hour}:${minute}:${second}`
+		},
 		async changyPreo(objy){
 			var result = {
 				inf: '',
@@ -263,24 +294,7 @@ export default {
 				result.inf = 'Дополнительная информация изменена с ' + objy.previousval + ' на ' + objy.newval;
 			}
 
-			result.date = (function(){
-				var res = objy.created.split('T');
-
-				var date = res[0].split('-');
-				var year = date[0];
-				var month = date[1] - 1;
-				var day = date[2];
-
-				var time = res[1].split(':');
-				var hour = time[0];
-				var minute = time[1];
-				var second = time[2];
-
-				second = second.split('.');
-				second = second[0];
-
-				return new Date(year, month, day, hour, minute, second);
-			})();
+			result.date = this.dateConverter(objy.created)
 
 			var select = await axios(`http://crm.aziaimport.kz:3000/api/where/add_user/0`, {
 				method: 'post',
@@ -288,15 +302,12 @@ export default {
 				data: {user: objy.responsible}
 			});
 
-			console.log(objy);
-
 			result.user = select.data[0];
 
 			if(typeof result.user == 'undefined'){
 				result.user = 'Не указано имя'
 			}
 
-			console.log(result)
 			return result
 		},
 		async selectCTab(num){
@@ -524,4 +535,28 @@ export default {
 	.main_none {
 		width: 97vw;
 	}
+
+@media only screen and (max-width: 600px) {
+	img.left {
+		right: 0;
+		height: 7vw;
+		width: 7vw;
+		z-index: 999;
+	}
+	img.right {
+		right: 93vw;
+	}
+ 	.main {
+ 		flex-direction: column;
+ 		height: 150vh;
+ 		overflow-y: auto;
+ 	}
+ 	.main_none {
+		width: 100vw;
+	}
+ 	div.left {
+ 		width: 100%;
+ 		height: 200%;
+ 	}
+}
 </style>

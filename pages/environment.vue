@@ -12,8 +12,6 @@
 				</div>
 			</div>
 			<div class="menu tex" @click="doSmth()">Тест</div>
-			<div class="menu tex"></div>
-			<div class="menu tex"></div>
 			<div class="menu tex" style="color: red; position: absolute; right: 0"	@click="exit()">Выход</div>
 		</div>
 		<div class="body">
@@ -28,7 +26,7 @@ import process from './process';
 export default {
 	data(){
 		return {
-			id: 0,
+			id: 1,
 			name: '',
 			procs: [],
 			infoDeal: false,
