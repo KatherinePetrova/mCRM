@@ -1,6 +1,8 @@
 <template>
-	<div class="process" v-bind:class="{processBack: new_process}">
-		<singleDeal :show="false" :deal="single" v-if="id!=0"></singleDeal>
+	<div class="process" v-bind:class="{processBack: new_process}">		
+		<singleCustomer :singleCus="singleCus" v-if="cusCard" @closeCus="closeCus"></singleCustomer>
+		<singleDeal :show="false" :deal="single" v-if="id!=0" @openCustomer="openCustomer"></singleDeal>
+
 		<div class="new_step" v-if="id == 0">
 			<form v-on:submit.prevent="sendProcess()" class="circle bord" @click="createProcess()" v-bind:class="{clicked_circle: new_process, back: new_process}">
 				<div v-if="new_process">Введите название воронки</div>
@@ -36,21 +38,25 @@
 <script>
 import axios from 'axios';
 import deal from './deal';
-import singleDeal from './singleDeal'
+import singleDeal from './singleDeal';
+import singleCustomer from './singleCustomer';
 export default {
 	components: {
 		deal,
-		singleDeal
+		singleDeal,
+		singleCustomer
 	},
 	props: ['id', 'new_process', 'new_step', 'newD'],
 	data(){
 		return {
+			cusCard: false,
 			stepName: '',
 			step: [],
 			label: '',
 			single: {
 				name: 'Новая'
-			}
+			},
+			singleCus: 0,
 		}
 	},
 	watch: {
@@ -68,8 +74,15 @@ export default {
 		}
 	},
 	methods: {
+		closeCus(data){
+			this.cusCard = data;
+		},
 		openSingle(data){
 			this.single = data;
+		},		
+		openCustomer(data){
+			this.cusCard = !this.cusCard;
+			this.singleCus = data;
 		},
 		getRandomInt(min, max) {
   			return Math.floor(Math.random() * (max - min)) + min;

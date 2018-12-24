@@ -32,7 +32,7 @@
 					<label>Дата создания: {{dateConverter(deal.created)}}</label>
 				</div>
 				<div class="main_info bord">
-					<h2>Клиент: {{customer.name}}</h2>
+					<h2 style="display: flex">Клиент: <div class="customer" @click="$emit('openCustomer', customer.id)">{{customer.name}}</div></h2>
 					<label v-for="item in add_customer">{{deleteDown(item.name)}}: {{item.text}}</label>
 				</div>
 				<div class="main_info bord">
@@ -398,12 +398,24 @@ export default {
 </script>
 
 <style scoped>
+<<<<<<< HEAD
+	.customer {
+		margin-left: 10px;
+		cursor: pointer;
+	}
+
+	.customer:hover {
+		color: rgb(77, 166, 255);
+	}
+
+=======
 	label.changy {
 		display: flex; 
 		justify-content: center; 
 		font-size: 80%; 
 		color: rgb(200, 200, 200);
 	}
+>>>>>>> 3dd0867f8f58d712bb5139df726b0fab34417e94
 	label.add {
 		cursor: pointer;
 	}
