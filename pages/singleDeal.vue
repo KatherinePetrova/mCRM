@@ -31,7 +31,7 @@
 					<label>Дата создания: {{deal.created}}</label>
 				</div>
 				<div class="main_info bord">
-					<h2>Клиент: {{customer.name}}</h2>
+					<h2 style="display: flex">Клиент: <div class="customer" @click="$emit('openCustomer', customer.id)">{{customer.name}}</div></h2>
 					<label v-for="item in add_customer">{{deleteDown(item.name)}}: {{item.text}}</label>
 				</div>
 				<div class="main_info bord">
@@ -204,6 +204,15 @@ export default {
 </script>
 
 <style scoped>
+	.customer {
+		margin-left: 10px;
+		cursor: pointer;
+	}
+
+	.customer:hover {
+		color: rgb(77, 166, 255);
+	}
+
 	label.add {
 		cursor: pointer;
 	}

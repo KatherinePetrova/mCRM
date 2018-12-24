@@ -65,9 +65,9 @@ export default {
 		newDeal(dealData){
 			this.deal=dealData;
 		},
-		infoDeal(infdeal){
-			this.infoDeal=infdeal;
-		},
+		// infoDeal(infdeal){
+		// 	this.infoDeal=infdeal;
+		// },
 		async doSmth(){
 			try{
 				var post = await axios(`http://crm.aziaimport.kz:3000/users/test`, {
