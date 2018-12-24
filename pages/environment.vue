@@ -11,11 +11,11 @@
 					<div class="menuex bord" @click="id=0">Создать новую воронку</div>
 				</div>
 			</div>
-			<div class="menu tex" @click="doSmth()">Тест</div>
+			<div class="menu tex" @click="new_deal = {show: true, process: id}">Добавить сделку</div>
 			<div class="menu tex" style="color: red; position: absolute; right: 0"	@click="exit()">Выход</div>
 		</div>
 		<div class="body">
-			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" :newD="newD"></process>
+			<process :id="id" :new_process="false" :new_step = "[]" @insert="insert" :newD="newD" :new_deal="new_deal"></process>
 		</div>
 	</div>
 </template>
@@ -34,7 +34,11 @@ export default {
 				clicked: false,
 				step: 0
 			},
-			newD: {}
+			newD: {},
+			new_deal: {
+				show: false,
+				process: 0
+			}
 		}
 	},
 	components: {
