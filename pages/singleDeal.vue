@@ -8,13 +8,14 @@
 				<div>Последнее изменение: {{deal.changed}}</div>
 			</div>
 			<div class="rows">
-				<div class="vklad bord tex" @click="showTab">
+				<div class="vklad bord tex" @click="newTab.show=true">
 					+
 				</div>
-				<form class="vklad bord tex selected_vklad" v-if="newTab.show" v-bind:class="{selected_vklad: vklad==4}" @submit.prevent="createTab">
-					<input type="text" @focusout="newTab.show = false; vklad=0" v-model="newTab.data" refs='opo'>
+				<form class="vklad bord tex selected_vklad" v-if="newTab.show" v-bind:class="{selected_vklad: vklad==4}" @submit.prevent="createTab" style="min-width: 200px">
+					<input type="text" v-model="newTab.data.name" style="width: 150px">
+					<label style="margin-left: 10px" class="tex add" @click="newTab.show=false">X</label>
 				</form>
-				<div class="vklad bord tex" v-for="item in tab" v-bind:class="{selected_vklad: vklad==2}" @click="vklad=2">
+				<div class="vklad bord tex" v-for="item in tab" v-bind:class="{selected_vklad: vklad==(item.id+5)}" @click="selectCTab(item.id+5)">
 					{{item.name}}
 				</div>
 				<div class="vklad bord tex" v-bind:class="{selected_vklad: vklad==1}" @click="vklad=1">
@@ -46,18 +47,33 @@
 					<form v-if="add_form.show" @submit.prevent="sendDocument">
 						<input type="text" placeholder="Тема" v-model="add_form.data.name" required> :
 						<input type="text" placeholder="Комментарий" v-model="add_form.data.text" required>
+						<input type="submit" style="margin-left: 10px">
 						<label class="tex add" style="margin-left: 10px" @click="add_form.show=false">Отменить</label>
 					</form>
 					<label class="tex add" @click="add_form.show=true">Добавить +</label>
 				</div>
 			</div>
 			<div class="left_main bord" v-else>
-				Приветик
+				<div class="main_info bord">
+					<label v-if="tab_inf.length==0">Информация не найдена</label>
+					<label v-for="item in tab_inf">{{deleteDown(item.name)}}: {{item.text}}</label>
+					<form v-if="add_form.show" @submit.prevent="sendTabInf(vklad-5)">
+						<input type="text" placeholder="Тема" v-model="add_form.data.name" required> :
+						<input type="text" placeholder="Комментарий" v-model="add_form.data.text" required>
+						<input type="submit" style="margin-left: 10px">
+						<label class="tex add" style="margin-left: 10px" @click="add_form.show=false">Отменить</label>
+					</form>
+					<label class="tex add" @click="add_form.show=true">Добавить +</label>
+				</div>
 			</div>
 		</div>
 		<div class="right" v-if="show">
 			<div class="chat">
-				
+				<div v-for="item in changy" style="margin-bottom: 10px">
+					<label class="changy">{{item.inf}}</label>
+					<label class="changy">{{item.date}}</label>
+					<label class="changy">{{item.user}}</label>
+				</div>
 			</div>
 			<form class="chat">
 				<textarea class="chat" placeholder="Примечание"></textarea>
@@ -90,7 +106,9 @@ export default {
 			add_form: {
 				show: false,
 				data: {}
-			}
+			},
+			tab_inf: [],
+			changy: []
 		}
 	},
 	props:['show', 'deal'],
@@ -98,6 +116,11 @@ export default {
 		deal: async function(){
 			
 			try{
+
+				this.tab = [];
+				this.tab_inf = [];
+				this.changy = []
+
 				var step_query = await axios(`http://crm.aziaimport.kz:3000/api/select/step/${this.deal.step}`, {
 					method: 'post',
 					withCredentials: true
@@ -134,6 +157,18 @@ export default {
 				var add_document_query = await axios(`http://crm.aziaimport.kz:3000/api/where/add_document/0`, {
 					method: 'post',
 					withCredentials: true,
+					data: {deal: this.deal.id, tab: null}
+				});
+
+				var tab_query = await axios(`http://crm.aziaimport.kz:3000/api/where/tab/0`, {
+					method: 'post',
+					withCredentials: true,
+					data: {deal: this.deal.id}
+				});
+
+				var changy_query = await axios(`http://crm.aziaimport.kz:3000/api/where/changy/0`, {
+					method: 'post',
+					withCredentials: true,
 					data: {deal: this.deal.id}
 				});
 
@@ -144,7 +179,15 @@ export default {
 				this.executor = await executor_query.data;
 				this.add_executor = await add_executor_query.data;
 				this.add_document = await add_document_query.data;
+				for(var i=0; i<tab_query.data.length; i++){
+					this.tab.unshift(tab_query.data[i])
+				}
+				
+				for(var i=0; i<changy_query.data.length; i++){
+					this.changy.push(await this.changyPreo(changy_query.data[i]));
+				}
 
+				console.log(this.changy);
 				if(this.responsible.length==0){
 					this.responsible = [{text: 'Не указан'}]
 				}
@@ -158,6 +201,146 @@ export default {
 		}
 	},
 	methods:{
+		async changyPreo(objy){
+			var result = {
+				inf: '',
+				date: '',
+				user: ''
+			}
+			if(objy.name == 'name'){
+				result.string1 = 'Название изменено с ' + objy.previousval + ' на ' + objy.newval;
+			} else if(objy.name == 'customer'){
+				var select = await axios(`http://crm.aziaimport.kz:3000/api/select/customer/${objy.previousval}`, {
+					method: 'post',
+					withCredentials: true
+				});
+				objy.previousval = select.data.name;
+				select = await axios(`http://crm.aziaimport.kz:3000/api/select/customer/${objy.newval}`, {
+					method: 'post',
+					withCredentials: true
+				});
+				objy.newval = select.data.name;
+				result.inf = 'Клиент изменен с ' + objy.previousval + ' на ' + objy.newval;
+			} else if(objy.name == 'executor'){
+				var select = await axios(`http://crm.aziaimport.kz:3000/api/select/executor/${objy.previousval}`, {
+					method: 'post',
+					withCredentials: true
+				});
+				objy.previousval = select.data.name;
+				select = await axios(`http://crm.aziaimport.kz:3000/api/select/executor/${objy.newval}`, {
+					method: 'post',
+					withCredentials: true
+				});
+				objy.newval = select.data.name;
+				result.inf = 'Исполнитель изменен с ' + objy.previousval + ' на ' + objy.newval;
+			} else if(objy.name == 'responsible'){
+				var select = await axios(`http://crm.aziaimport.kz:3000/api/select/add_user/${objy.previousval}`, {
+					method: 'post',
+					withCredentials: true
+				});
+				objy.previousval = select.data[0].text;
+				select = await axios(`http://crm.aziaimport.kz:3000/api/select/add_user/${objy.newval}`, {
+					method: 'post',
+					withCredentials: true
+				});
+				objy.newval = select.data[0].text;
+				result.inf = 'Ответственный изменен с ' + objy.previousval + ' на ' + objy.newval;
+			} else if(objy.name == 'step'){
+				var select = await axios(`http://crm.aziaimport.kz:3000/api/select/step/${objy.previousval}`, {
+					method: 'post',
+					withCredentials: true
+				});
+				objy.previousval = select.data.name;
+				select = await axios(`http://crm.aziaimport.kz:3000/api/select/step/${objy.newval}`, {
+					method: 'post',
+					withCredentials: true
+				});
+				objy.newval = select.data.name;
+				result.inf = 'Этап изменен с ' + objy.previousval + ' на ' + objy.newval;
+			} else if(objy.name == 'budget'){
+				result.inf = 'Бюджет изменен с ' + objy.previousval + ' на ' + objy.newval;
+			} else if(objy.name == 'text'){
+				result.inf = 'Дополнительная информация изменена с ' + objy.previousval + ' на ' + objy.newval;
+			}
+
+			result.date = (function(){
+				var res = objy.created.split('T');
+
+				var date = res[0].split('-');
+				var year = date[0];
+				var month = date[1] - 1;
+				var day = date[2];
+
+				var time = res[1].split(':');
+				var hour = time[0];
+				var minute = time[1];
+				var second = time[2];
+
+				second = second.split('.');
+				second = second[0];
+
+				return new Date(year, month, day, hour, minute, second);
+			})();
+
+			var select = await axios(`http://crm.aziaimport.kz:3000/api/where/add_user/0`, {
+				method: 'post',
+				withCredentials: true,
+				data: {user: objy.responsible}
+			});
+
+			console.log(objy);
+
+			result.user = select.data[0];
+
+			if(typeof result.user == 'undefined'){
+				result.user = 'Не указано имя'
+			}
+
+			console.log(result)
+			return result
+		},
+		async selectCTab(num){
+			
+			var select = await axios(`http://crm.aziaimport.kz:3000/api/where/add_document/0`, {
+				method: 'post',
+				withCredentials: true,
+				data: {deal: this.deal.id, tab: num-5}
+			});
+			this.tab_inf = select.data;
+			this.vklad = num;
+		},
+		async sendTabInf(num){
+			try{
+				this.add_form.data.deal = this.deal.id;
+				this.add_form.data.tab = num;
+				var insert = await axios(`http://crm.aziaimport.kz:3000/api/insert/add_document`, {
+					method: 'post',
+					withCredentials: true,
+					data: this.add_form.data
+				});
+				this.tab_inf.push(insert.data);
+				this.add_form.data = {};
+				this.add_form.show=false;
+			} catch(e){
+				alert(e)
+			}
+		},
+		async createTab(){
+			try{
+				this.newTab.data.deal = this.deal.id;
+				var insert = await axios(`http://crm.aziaimport.kz:3000/api/insert/tab`, {
+					method: 'post',
+					withCredentials: true,
+					data: this.newTab.data
+				});
+				this.tab.unshift(insert.data);
+				this.newTab.data = {};
+				this.newTab.show=false;
+			} catch(e){
+				alert(e)
+			}
+			
+		},
 		showTab(){
 			this.newTab.show=true;
 			this.$nextTick(() => this.$refs.opo.focus());
@@ -204,6 +387,7 @@ export default {
 </script>
 
 <style scoped>
+<<<<<<< HEAD
 	.customer {
 		margin-left: 10px;
 		cursor: pointer;
@@ -213,6 +397,14 @@ export default {
 		color: rgb(77, 166, 255);
 	}
 
+=======
+	label.changy {
+		display: flex; 
+		justify-content: center; 
+		font-size: 80%; 
+		color: rgb(200, 200, 200);
+	}
+>>>>>>> 3dd0867f8f58d712bb5139df726b0fab34417e94
 	label.add {
 		cursor: pointer;
 	}
@@ -229,8 +421,9 @@ export default {
 		flex-direction: column;	
 	}
 	div.chat {
-		height: 80%;
+		min-height: 80%;
 		width: 100%;
+		overflow-y: auto;
 	}
 	div.main_info {
 		min-height: calc(20% + 10px);
@@ -302,6 +495,7 @@ export default {
 		text-align: center;
 		padding-left: 10px;
 		padding-right: 10px;
+		font-size: 70%;
 	}
 	.vklad:hover {
 		border-bottom-style: none;
