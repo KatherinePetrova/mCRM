@@ -352,10 +352,6 @@ export default {
 			}
 			
 		},
-		showTab(){
-			this.newTab.show=true;
-			this.$nextTick(() => this.$refs.opo.focus());
-		},
 		async sendDocument(){
 			try{
 				this.add_form.data.deal = this.deal.id;
@@ -398,6 +394,10 @@ export default {
 </script>
 
 <style scoped>
+<<<<<<< HEAD
+=======
+
+>>>>>>> d94fb2e33f97ce3bcbc943b7ddf9f9fe6a75a1ef
 	.customer {
 		margin-left: 10px;
 		cursor: pointer;
@@ -406,12 +406,21 @@ export default {
 	.customer:hover {
 		color: rgb(77, 166, 255);
 	}
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> d94fb2e33f97ce3bcbc943b7ddf9f9fe6a75a1ef
 	label.changy {
 		display: flex; 
 		justify-content: center; 
 		font-size: 80%; 
 		color: rgb(200, 200, 200);
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> d94fb2e33f97ce3bcbc943b7ddf9f9fe6a75a1ef
 	label.add {
 		cursor: pointer;
 	}

@@ -1,10 +1,10 @@
 <template>
 	<transition name="modal-fade">
-		<div class="bgWindow">
+		<div v-if="show" class="bgWindow" ref="win">
 			<div class="win bord">
 				<div class="left bord">
 					<div class="name">
-						<h1 style="font-size: 2.5em">{{customer.name}}</h1>
+						<h1 style="font-size: 2.5em; color: #000">{{customer.name}}</h1>
 					</div>
 					<div class="rows">
 						<div class="vklad bord tex" v-bind:class="{selected_vklad: vklad==1}" @click="vklad=1">
@@ -21,16 +21,16 @@
 						</div>
 					</div>
 					<div class="left_main bord" v-else-if="vklad==1">
-						<div class="main_info bord">
+						<div class="main_info bord" v-for="item in deal">
 							<!-- <label v-for="item in deal">{{deleteDown(item.name)}}</label> -->
-							<div style="display: flex; flex-direction: column; justify-content: space-around; border-bottom-style: solid; padding: 1em; width: 100%">
+							<div style="display: flex; flex-direction: column; justify-content: space-around; padding: 1em; width: 100%">
 								<div style="display: flex; justify-content: space-between;">
-									<label>Сделка</label>
-									<label>41324 тг.</label>
+									<label>{{deleteDown(item.name)}}</label>
+									<label>{{item.budget}} тг.</label>
 								</div>
-								<div style="border-style: solid; border-width: 1px; padding: .5em;">
-									<label style="margin-right: .7em">Воронка</label>
-									<label style="background-color: rgb(77, 166, 255); color: white; border-radius: .5em; padding: .3em">Этап</label>	
+								<div style="border-style: solid; border-width: 1px; padding: .5em; border-color: rgb(77, 166, 255); margin-top: 7%;">
+									<label style="margin-right: .7em">{{item.process.name}}</label>
+									<label style="background-color: rgb(77, 166, 255); color: white; border-radius: .5em; padding: .2em .5em">{{item.step.name}}</label>	
 								</div>
 							</div>
 						</div>
@@ -63,13 +63,15 @@ export default {
 			add_customer: [],
 			customer: {
 				name: 'Не указано'
-			}
+			}, 
+			show:false
 		}
 	},
 	props:['singleCus'],
 	watch:{
 		singleCus: async function(){
 			console.log(this.singleCus);
+			this.show=true;
 			try{
 				var customer_query = await axios(`http://crm.aziaimport.kz:3000/api/select/customer/${this.singleCus}`, {
 					method: "post",
@@ -91,8 +93,31 @@ export default {
 						customer: this.singleCus
 					}
 				});
-				this.add_customer = add_customer_query.data;
+
 				this.deal = deal_query.data;
+
+				for(var i=0; i<this.deal.length; i++){
+					var step = await axios(`http://crm.aziaimport.kz:3000/api/select/step/${this.deal[i].step}`, {
+						method: "post",
+						withCredentials: true,
+					});
+
+					this.deal[i].step = step.data;
+
+					var process = await axios(`http://crm.aziaimport.kz:3000/api/select/process/${this.deal[i].step.id}`, {
+						method: "post",
+						withCredentials: true,
+					});
+
+					this.deal[i].process = process.data;
+
+					document.addEventListener("click",() => this.closeWin());
+					document.querySelector('.win').addEventListener("click",(event) => event.stopPropagation());
+
+				}
+
+				this.add_customer = add_customer_query.data;
+				
 				this.customer = customer_query.data;
 			} catch(e){
 				alert(e);
@@ -101,7 +126,7 @@ export default {
 	},
 	methods:{
 		closeWin() {
-			this.$emit('closeCus', false);
+			this.show=false;
 		},
 		showTab(){
 			this.newTab.show=true;
@@ -143,8 +168,7 @@ export default {
 		}
 	},
 	mounted(){
-		document.addEventListener("click",() => this.closeWin());
-		document.querySelector('.win').addEventListener("click",(event) => event.stopPropagation());
+		
 	}
 }
 
@@ -232,6 +256,7 @@ export default {
 		display: flex;
 		flex-direction: column;
 		overflow-y: auto;
+		color: #000;
 	}
 
 	div.left {
