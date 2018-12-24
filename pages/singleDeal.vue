@@ -352,10 +352,6 @@ export default {
 			}
 			
 		},
-		showTab(){
-			this.newTab.show=true;
-			this.$nextTick(() => this.$refs.opo.focus());
-		},
 		async sendDocument(){
 			try{
 				this.add_form.data.deal = this.deal.id;
@@ -398,7 +394,7 @@ export default {
 </script>
 
 <style scoped>
-<<<<<<< HEAD
+
 	.customer {
 		margin-left: 10px;
 		cursor: pointer;
@@ -408,14 +404,14 @@ export default {
 		color: rgb(77, 166, 255);
 	}
 
-=======
+
 	label.changy {
 		display: flex; 
 		justify-content: center; 
 		font-size: 80%; 
 		color: rgb(200, 200, 200);
 	}
->>>>>>> 3dd0867f8f58d712bb5139df726b0fab34417e94
+
 	label.add {
 		cursor: pointer;
 	}
