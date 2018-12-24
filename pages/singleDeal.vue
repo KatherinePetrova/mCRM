@@ -398,7 +398,6 @@ export default {
 </script>
 
 <style scoped>
-<<<<<<< HEAD
 	.customer {
 		margin-left: 10px;
 		cursor: pointer;
@@ -407,15 +406,12 @@ export default {
 	.customer:hover {
 		color: rgb(77, 166, 255);
 	}
-
-=======
 	label.changy {
 		display: flex; 
 		justify-content: center; 
 		font-size: 80%; 
 		color: rgb(200, 200, 200);
 	}
->>>>>>> 3dd0867f8f58d712bb5139df726b0fab34417e94
 	label.add {
 		cursor: pointer;
 	}
