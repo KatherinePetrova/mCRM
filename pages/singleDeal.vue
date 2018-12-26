@@ -19,7 +19,7 @@
 			</div>
 			<div class="left_main bord" v-if="vklad==0">
 				<div class="main_info bord">
-					<label>Ответственный: {{responsible[0].text}}</label>
+					<label>Ответственный: {{deleteDown(responsible[0].text)}}</label>
 					<label>Бюджет: <input type="number" placeholder="Сумма" required v-model="form.budget"> тг</label>
 					<label>Дата создания: сделка еще не создана</label>
 				</div>
