@@ -1,7 +1,63 @@
 <template>
 	<div class="main" v-bind:class="{main_none: show}">
 		<img src="/arrow.png" class="left bord" @click="show=!show" v-bind:class="{right: show}">
-		<div class="left bord" v-if="show">
+		<form class="left bord" v-if="show && new_deal.show" @submit.prevent="ndSend">
+			<div class="name">
+				<h1 style="font-size: 2.5em">
+					Сделка: <input type="text" placeholder="Название" style="font-size: 0.75em" required v-model="form.name">
+				</h1>
+				<div>Этап: {{step.name}}</div>
+				<div>Последнее изменение: сделка еще не создана</div>
+			</div>
+			<div class="rows">
+				<div class="vklad bord tex" v-bind:class="{selected_vklad: vklad==1}" @click="vklad=1">
+					Дополнительная информация
+				</div>
+				<div class="vklad bord tex" v-bind:class="{selected_vklad: vklad==0}" @click="vklad=0">
+					Основное
+				</div>
+			</div>
+			<div class="left_main bord" v-if="vklad==0">
+				<div class="main_info bord">
+					<label>Ответственный: {{responsible[0].text}}</label>
+					<label>Бюджет: <input type="number" placeholder="Сумма" required v-model="form.budget"> тг</label>
+					<label>Дата создания: сделка еще не создана</label>
+				</div>
+				<div class="main_info bord">
+					<h2 style="display: flex; align-items: center;">
+						Клиент: 
+						<input type="text" list="customer" v-model="form.customer" @input="like('customer', form.customer)" placeholder="Имя контакта" required style="font-size: 0.75em; margin-top: 10px; margin-left: 10px">
+						<datalist id="customer">
+		    				<option v-for="item in customer" :value="item.id">{{item.name}}</option>
+		   				</datalist>
+					</h2>
+				</div>
+				<div class="main_info bord">
+					<h2>
+						Исполнитель: 
+						<input class="fast" type="text" list="executor" v-model="form.executor" @input="like('executor', form.executor)" placeholder="Компания исполнителя" required style="font-size: 0.75em; margin-top: 10px; margin-left: 10px">
+						<datalist id="executor">
+		    				<option v-for="item in executor" :value="item.id">{{item.name}}</option>
+		   				</datalist>
+					</h2>
+				</div>
+				<div class="main_info bord">
+					<input type='submit' style="width: 15%; height: 5vh">
+				</div>
+			</div>
+			<div class="left_main bord" v-else-if="vklad==1">
+				<div class="main_info bord">
+					<label v-for="item in add_document">{{deleteDown(item.name)}}: {{item.text}}</label>
+					<form v-if="add_form.show" @submit.prevent="ndSendDocument">
+						<input type="text" placeholder="Тема" v-model="add_form.data.name" required> :
+						<input type="text" placeholder="Комментарий" v-model="add_form.data.text" required>
+						<input type="submit" style="margin-left: 10px" value="Добавить">
+						<label class="tex add" style="margin-left: 10px" @click="add_form.show=false">Отменить</label>
+					</form>
+				</div>
+			</div>
+		</form>
+		<div class="left bord" v-else-if="show && !new_deal.show">
 			<div class="name">
 				<h1 style="font-size: 2.5em">{{deal.name}}</h1>
 				<div>Этап: {{step.name}}</div>
@@ -27,23 +83,23 @@
 			</div>
 			<div class="left_main bord" v-if="vklad==0">
 				<div class="main_info bord">
-					<label>Ответственный: {{responsible[0].text}}</label>
+					<label>Ответственный: {{deleteDown(responsible[0].text)}}</label>
 					<label>Бюджет: {{deal.budget}}тг</label>
 					<label>Дата создания: {{dateConverter(deal.created)}}</label>
 				</div>
 				<div class="main_info bord">
 					<h2 style="display: flex">Клиент: <div class="customer" @click="$emit('openCustomer', customer.id)">{{customer.name}}</div></h2>
-					<label v-for="item in add_customer">{{deleteDown(item.name)}}: {{item.text}}</label>
+					<label v-for="item in add_customer">{{deleteDown(item.name)}}: {{deleteDown(item.text)}}</label>
 				</div>
 				<div class="main_info bord">
 					<h2>Исполнитель: {{executor.name}}</h2>
-					<label v-for="item in add_executor">{{deleteDown(item.name)}}: {{item.text}}</label>
+					<label v-for="item in add_executor">{{deleteDown(item.name)}}: {{deleteDown(item.text)}}</label>
 				</div>
 			</div>
 			<div class="left_main bord" v-else-if="vklad==1">
 				<div class="main_info bord">
 					<label v-if="add_document.length==0">Дополнительная информация не найдена</label>
-					<label v-for="item in add_document">{{deleteDown(item.name)}}: {{item.text}}</label>
+					<label v-for="item in add_document">{{deleteDown(item.name)}}: {{deleteDown(item.text)}}</label>
 					<form v-if="add_form.show" @submit.prevent="sendDocument">
 						<input type="text" placeholder="Тема" v-model="add_form.data.name" required> :
 						<input type="text" placeholder="Комментарий" v-model="add_form.data.text" required>
@@ -56,7 +112,7 @@
 			<div class="left_main bord" v-else>
 				<div class="main_info bord">
 					<label v-if="tab_inf.length==0">Информация не найдена</label>
-					<label v-for="item in tab_inf">{{deleteDown(item.name)}}: {{item.text}}</label>
+					<label v-for="item in tab_inf">{{deleteDown(item.name)}}: {{deleteDown(item.text)}}</label>
 					<form v-if="add_form.show" @submit.prevent="sendTabInf(vklad-5)">
 						<input type="text" placeholder="Тема" v-model="add_form.data.name" required> :
 						<input type="text" placeholder="Комментарий" v-model="add_form.data.text" required>
@@ -94,7 +150,7 @@ export default {
 			add_customer: {},
 			add_executor: {},
 			step: {},
-			add_document: {},
+			add_document: [],
 			responsible: [{
 				text: 'Не указано'
 			}],
@@ -108,13 +164,30 @@ export default {
 				data: {}
 			},
 			tab_inf: [],
-			changy: []
+			changy: [],
+			form: {}
 		}
 	},
-	props:['show', 'deal'],
+	props:['show', 'deal', 'new_deal'],
 	watch:{
+		new_deal: async function(){
+			var steps = await axios(`http://crm.aziaimport.kz:3000/api/where/step/0`, {
+				method: 'post',
+				withCredentials: true,
+				data: {process: this.new_deal.process}
+			});
+			this.step = steps.data[0];
+			console.log(steps)
+			this.show=true;
+			this.add_form.show=true;
+			this.tab_inf = [];
+			this.changy = []
+		},
 		deal: async function(){
-			
+			this.new_deal.show  = false;
+			this.add_form.show=false;
+			this.add_form.data = {};
+			this.add_document = [];
 			try{
 
 				this.tab = [];
@@ -211,6 +284,52 @@ export default {
 		}
 	},
 	methods:{
+		async ndSend(){
+			try{
+				this.form.step = this.step.id;
+				var insert = await axios(`http://crm.aziaimport.kz:3000/api/insert/deal`, {
+					method: 'post',
+					data: this.form,
+					withCredentials: true
+				});
+				console.log(insert);
+				for(var i=0; i<this.add_document.length; i++){
+					this.add_document[i].deal = insert.data.id;
+					var doc_insert = await axios(`http://crm.aziaimport.kz:3000/api/insert/add_document`, {
+						method: 'post',
+						data: this.add_document[i],
+						withCredentials: true
+					});
+					console.log(doc_insert)
+				}
+
+				this.new_deal.show=false;
+				this.deal = insert.data;
+			} catch(e){
+				alert(e);
+			}
+			
+		},
+		ndSendDocument(){
+			this.add_document.push(this.add_form.data);
+			this.add_form.data = {};
+		},
+		like(table, like){
+			axios(`http://crm.aziaimport.kz:3000/api/like/${table}`, {
+				method: 'post',
+				data: {like: like},
+				withCredentials: true
+			}).then((res)=>{
+				if(table=='customer'){
+					this.customer = res.data;
+				} else if(table=='executor'){
+					this.executor = res.data;
+				}
+			}).catch((res)=>{
+				alert(res);
+				console.log(res);
+			})
+		},
 		dateConverter(str, bol){
 			var res = str.split('T');
 
@@ -470,6 +589,13 @@ export default {
 		overflow-y: auto;
 	}
 	div.left {
+		height: 100%;
+		width: 60%;
+		display: flex;
+		border-right-style: solid;
+		flex-direction: column;
+	}
+	form.left {
 		height: 100%;
 		width: 60%;
 		display: flex;

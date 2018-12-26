@@ -1,7 +1,7 @@
 <template>
 	<div class="process" v-bind:class="{processBack: new_process}">		
 		<singleCustomer :singleCus="singleCus"></singleCustomer>
-		<singleDeal :show="false" :deal="single" v-if="id!=0" @openCustomer="openCustomer"></singleDeal>
+		<singleDeal :show="false" :deal="single" v-if="id!=0" @openCustomer="openCustomer" :new_deal="new_deal"></singleDeal>
 
 		<div class="new_step" v-if="id == 0">
 			<form v-on:submit.prevent="sendProcess()" class="circle bord" @click="createProcess()" v-bind:class="{clicked_circle: new_process, back: new_process}">
@@ -46,7 +46,7 @@ export default {
 		singleDeal,
 		singleCustomer
 	},
-	props: ['id', 'new_process', 'new_step', 'newD'],
+	props: ['id', 'new_process', 'new_step', 'newD', 'new_deal'],
 	data(){
 		return {
 			// cusCard: false,
