@@ -19,7 +19,7 @@
 			</div>
 			<div class="left_main bord" v-if="vklad==0">
 				<div class="main_info bord">
-					<label>Ответственный: {{responsible[0].text}}</label>
+					<label>Ответственный: {{deleteDown(responsible.text)}}</label>
 					<label>Бюджет: <input type="number" placeholder="Сумма" required v-model="form.budget"> тг</label>
 					<label>Дата создания: сделка еще не создана</label>
 				</div>
@@ -83,7 +83,7 @@
 			</div>
 			<div class="left_main bord" v-if="vklad==0">
 				<div class="main_info bord">
-					<label>Ответственный: {{deleteDown(responsible[0].text)}}</label>
+					<label>Ответственный: {{deleteDown(responsible.text)}}</label>
 					<label>Бюджет: {{deal.budget}}тг</label>
 					<label>Дата создания: {{dateConverter(deal.created)}}</label>
 				</div>
@@ -151,9 +151,9 @@ export default {
 			add_executor: {},
 			step: {},
 			add_document: [],
-			responsible: [{
-				text: 'Не указано'
-			}],
+			responsible: {
+				text: 'Не указан'
+			},
 			tab: [],
 			newTab: {
 				show: false,
@@ -177,11 +177,11 @@ export default {
 				data: {process: this.new_deal.process}
 			});
 			this.step = steps.data[0];
-			console.log(steps)
 			this.show=true;
 			this.add_form.show=true;
 			this.tab_inf = [];
-			this.changy = []
+			this.changy = [];
+			this.add_document = [];
 		},
 		deal: async function(){
 			this.new_deal.show  = false;
@@ -254,7 +254,13 @@ export default {
 				this.step = await step_query.data;
 				this.customer = await customer_query.data;
 				this.add_customer = await add_customer_query.data;
-				this.responsible = await add_user_query.data;
+				add_user_query.data = add_user_query.data[0];
+				if(typeof add_user_query.data == 'undefined'){
+					this.responsible.text = 'Не указан';
+
+				} else {
+					this.responsible = add_user_query.data;
+				}
 				this.executor = await executor_query.data;
 				this.add_executor = await add_executor_query.data;
 				this.add_document = await add_document_query.data;
@@ -268,12 +274,7 @@ export default {
 
 				for(var i=0; i<comment_query.data.length; i++){
 					this.changy.push(comment_query.data[i]);
-				}
-
-				
-				if(this.responsible.length==0){
-					this.responsible = [{text: 'Не указан'}]
-				}
+				}				
 
 				this.vklad = 0;
 				this.show = true;
@@ -513,10 +514,6 @@ export default {
 </script>
 
 <style scoped>
-<<<<<<< HEAD
-=======
-
->>>>>>> d94fb2e33f97ce3bcbc943b7ddf9f9fe6a75a1ef
 	.customer {
 		margin-left: 10px;
 		cursor: pointer;
@@ -525,21 +522,12 @@ export default {
 	.customer:hover {
 		color: rgb(77, 166, 255);
 	}
-<<<<<<< HEAD
-=======
-
-
->>>>>>> d94fb2e33f97ce3bcbc943b7ddf9f9fe6a75a1ef
 	label.changy {
 		display: flex; 
 		justify-content: center; 
 		font-size: 80%; 
 		color: rgb(200, 200, 200);
 	}
-<<<<<<< HEAD
-=======
-
->>>>>>> d94fb2e33f97ce3bcbc943b7ddf9f9fe6a75a1ef
 	label.add {
 		cursor: pointer;
 	}
