@@ -4,6 +4,7 @@
 			<div class="win bord">
 				<div class="left bord">
 					<div class="name">
+						<img src="/arrow.png" class="arrow" @click="show=!show">
 						<h1 style="font-size: 2.5em; color: #000">{{customer.name}}</h1>
 					</div>
 					<div class="rows">
@@ -111,8 +112,8 @@ export default {
 
 					this.deal[i].process = process.data;
 
-					document.addEventListener("click",() => this.closeWin());
-					document.querySelector('.win').addEventListener("click",(event) => event.stopPropagation());
+					// document.addEventListener("click",() => this.closeWin());
+					// document.querySelector('.win').addEventListener("click",(event) => event.stopPropagation());
 
 				}
 
@@ -175,6 +176,16 @@ export default {
 </script>
 
 <style scoped>
+
+	.arrow {
+		transform: rotateY(180deg);
+		width: 2em;
+		height: 2em;
+		position: absolute;
+		top: 1.5em;
+		left: .5em;
+		cursor: pointer;
+	}
 
 	.modal-fade-enter,
 	.modal-fade-leave-active {
@@ -272,7 +283,8 @@ export default {
 		width: 95%;
 		display: flex;
 		justify-content: center;
-		padding-left: 5%;
+		padding-left: 7%;
+		padding-bottom: 5%;
 		flex-direction: column;
 		font-size: 0.75em;
 	}
